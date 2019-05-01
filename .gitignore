@@ -3,3 +3,5 @@
 
 venv/
 pyenv.cfg
+
+*__pycache__/
