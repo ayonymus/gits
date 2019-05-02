@@ -42,7 +42,7 @@ class TaskHandler:
 
     def set_task_done(self, branch, index):
         tasks = self.get_tasks(branch)
-        if len(tasks) > 0 and len(tasks) > index:
+        if len(tasks) > index:
             done_task = tasks.pop(index)
 
             self.remove_task(branch, index)

@@ -42,6 +42,9 @@ class Gits:
 
     def assign_task(self, task):
         branch = self.git.branch()
+        self.assign_to_branch(branch, task)
+
+    def assign_to_branch(self, branch, task):
         self.tasks.assign_task(branch, task)
         print("Assigned to '%s'" % branch)
 
@@ -60,6 +63,13 @@ class Gits:
 
     def move_task(self, old_pos, new_pos):
         print("Done" if self.tasks.move_task(self.git.branch(), old_pos, new_pos) else "Index error")
+
+    def print_done(self):
+        br = self.git.branch()
+        print("Done tasks for %s branch:" % br)
+        for i, task in enumerate(self.tasks.get_done_tasks(br)):
+            print(i, task)
+        print()
 
     def close_work(self):
         # TODO
@@ -80,9 +90,11 @@ class Gits:
         parser.add_argument("-t", help="Assign a task to current work branch", type=str)
         parser.add_argument("--tasks", help="List tasks assigned to current work branch", action="store_true")
         parser.add_argument("-r", help="Remove task by id", type=int)
-        parser.add_argument("-d", "--done", help="Set task done by id", type=int)
-        parser.add_argument("-m", nargs='+', help="Move task in list", type=int)
+        parser.add_argument("--done", nargs=1, help="Set task done by id", type=int)
+        parser.add_argument("--listdone", help="Set task done by id", action="store_true")
+        parser.add_argument("-m", nargs=2, help="Move task in list", type=int)
         parser.add_argument("--movetop", help="Move task to top in list", type=int)
+        parser.add_argument("--task", nargs=2, help="Assign a task to arbitrary branch. [0] branch name, [1] task", type=str)
 
         # task should have a date
         # should delete task
@@ -110,7 +122,7 @@ class Gits:
             self.print_tasks()
             return
         if args.done:
-            self.set_task_done(args.done)
+            self.set_task_done(args.done[0])
             return
         if args.r:
             self.remove_task(args.r)
@@ -120,6 +132,12 @@ class Gits:
             return
         if args.movetop:
             self.move_task(args.movetop, 0)
+            return
+        if args.task:
+            self.assign_to_branch(args.task[0], args.task[1])
+            return
+        if args.listdone:
+            self.print_done()
             return
 
         self.print_current_work_branch()
