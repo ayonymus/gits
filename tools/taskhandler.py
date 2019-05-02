@@ -1,4 +1,5 @@
 
+
 class TaskHandler:
 
     def __init__(self, storage):
@@ -16,7 +17,46 @@ class TaskHandler:
 
     def get_tasks(self, branch):
         all_tasks = self.storage.load_all_tasks()
-        if branch in all_tasks.keys():
-            return all_tasks[branch]
+        return self.__get_list__(all_tasks, branch)
+
+    def remove_task(self, branch, index):
+        all_tasks = self.storage.load_all_tasks()
+        tasks = self.__get_list__(all_tasks, branch)
+        if len(tasks) > 0 and len(tasks) > index:
+            tasks.pop(index)
+            all_tasks[branch] = tasks
+            self.storage.store_tasks(all_tasks)
+            return True
+        else:
+            return False
+
+    def get_done_tasks(self, branch):
+        all_done_tasks = self.storage.load_all_done_tasks()
+        return self.__get_list__(all_done_tasks, branch)
+
+    def __get_list__(self, dictionary, key):
+        if key in dictionary.keys():
+            return dictionary[key]
         else:
             return []
+
+    def set_task_done(self, branch, index):
+        tasks = self.get_tasks(branch)
+        if len(tasks) > 0 and len(tasks) > index:
+            done_task = tasks.pop(index)
+
+            self.remove_task(branch, index)
+
+            all_done_tasks = self.storage.load_all_done_tasks()
+
+            branch_done = self.__get_list__(all_done_tasks, branch)
+            branch_done.append(done_task)
+
+            all_done_tasks[branch] = branch_done
+
+            self.storage.store_done_tasks(all_done_tasks)
+            return True
+        return False
+
+
+

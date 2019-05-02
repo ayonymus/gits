@@ -15,9 +15,9 @@ class Gits:
     """
 
     def __init__(self):
-        git = GitHelper()
-        storage = Storage(git.work_dir())
-        self.workbranch = Workbranch(storage, git)
+        self.git = GitHelper()
+        storage = Storage(self.git.work_dir())
+        self.workbranch = Workbranch(storage, self.git)
         self.tasks = TaskHandler(storage)
 
     def print_current_work_branch(self):
@@ -30,27 +30,33 @@ class Gits:
 
     def set_work_branch(self):
         branch = self.workbranch.set_work_branch()
-        print("Current work branch is " + branch)
+        print("Current work branch is %s" % branch)
 
     def checkout_work_branch(self):
         branch = self.workbranch.checkout_work_branch()
-        print("Current branch is", branch)
+        print("Switched to branch '%s'" % branch)
 
     def checkout_work_branch_history(self, index):
         branch = self.workbranch.checkout_work_branch_from_history(index)
-        print("No such branch" if branch is None else "Current branch is", branch)
+        print("No such branch" if branch is None else "Switched to branch '%s'" % branch)
 
     def assign_task(self, task):
-        branch = self.workbranch.get_work_branch()
+        branch = self.git.branch()
         self.tasks.assign_task(branch, task)
-        print("Assigned to", branch)
+        print("Assigned to '%s'" % branch)
 
     def print_tasks(self):
-        br = self.workbranch.get_work_branch()
-        print("Tasks for '", br, "' branch:")
+        br = self.git.branch()
+        print("Tasks for %s branch:" % br)
         for i, task in enumerate(self.tasks.get_tasks(br)):
             print(i, task)
         print()
+
+    def remove_task(self, index):
+        print("Done" if self.tasks.remove_task(self.git.branch(), index) else "No such task")
+
+    def set_task_done(self, index):
+        print("Done" if self.tasks.set_task_done(self.git.branch(), index) else "No such task")
 
     def close_work(self):
         # TODO
@@ -70,6 +76,8 @@ class Gits:
         parser.add_argument("-H", "--history", help="Show work branch history", action="store_true")
         parser.add_argument("-t", help="Assign a task to current work branch", type=str)
         parser.add_argument("--tasks", help="List tasks assigned to current work branch", action="store_true")
+        parser.add_argument("-r", help="Remove task by id", type=int)
+        parser.add_argument("-d", help="Set task done by id", type=int)
         # task should have a date
         # should delete task
         # should complete task
@@ -94,6 +102,12 @@ class Gits:
             return
         if args.tasks:
             self.print_tasks()
+            return
+        if args.d:
+            self.set_task_done(args.d)
+            return
+        if args.r:
+            self.remove_task(args.r)
             return
         self.print_current_work_branch()
 

@@ -3,6 +3,8 @@ import json
 
 KEY_BRANCH = 'workbranches'
 KEY_TASK = 'tasks'
+KEY_TASK_DONE = 'tasks_done'
+
 
 PATH_STORAGE = "/.git/gits"
 
@@ -28,13 +30,19 @@ class Storage:
 
     # work branch
     def load_work_branches(self):
-        return self.__get_works__(self.__load__())
+        return self.__get_list__(self.__load__(), KEY_BRANCH)
 
-    def __get_works__(self, data):
+    def __get_list__(self, data, key):
         try:
-            return data[KEY_BRANCH]
+            return data[key]
         except:
             return []
+
+    def __get_dict__(self, data, key):
+        try:
+            return data[key]
+        except:
+            return {}
 
     def update_branch_history(self, branch_list):
         data = self.__load__()
@@ -43,15 +51,19 @@ class Storage:
 
     # tasks
     def load_all_tasks(self):
-        return self.__get_tasks__(self.__load__())
-
-    def __get_tasks__(self, data):
-        try:
-            return data[KEY_TASK]
-        except:
-            return dict()
+        return self.__get_dict__(self.__load__(), KEY_TASK)
 
     def store_tasks(self, tasks):
         data = self.__load__()
         data[KEY_TASK] = tasks
         self.__store__(data)
+
+    def load_all_done_tasks(self):
+        return self.__get_dict__(self.__load__(), KEY_TASK_DONE)
+
+    def store_done_tasks(self, tasks):
+        data = self.__load__()
+        data[KEY_TASK_DONE] = tasks
+        self.__store__(data)
+
+

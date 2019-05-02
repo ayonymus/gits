@@ -4,8 +4,9 @@ from unittest.mock import Mock
 from tools.taskhandler import TaskHandler
 
 BRANCH = "barbie"
+BRANCH2 = "barbie2"
 TASK1 = "go go go"
-TASK2 = "go go go"
+TASK2 = "go go go2"
 
 
 class TestTasksMethods(unittest.TestCase):
@@ -35,12 +36,70 @@ class TestTasksMethods(unittest.TestCase):
 
         self.assertEqual([TASK1, TASK2], result)
 
-    def test_get_tasks_return_empty_list(self):
+    def test_get_tasks_returns_empty_list(self):
         self.storage.load_all_tasks.return_value = dict()
 
         result = self.tasks.get_tasks(BRANCH)
 
         self.assertEqual([], result)
+
+    def test_remove_task_should_return_true(self):
+        self.storage.load_all_tasks.return_value = {BRANCH: [TASK1, TASK2]}
+
+        result = self.tasks.remove_task(BRANCH, 0)
+
+        self.storage.store_tasks.assert_called_with({BRANCH: [TASK2]})
+        self.assertTrue(result)
+
+    def test_remove_task_should_return_false_when_wrong_index(self):
+        self.storage.load_all_tasks.return_value = {BRANCH: [TASK1, TASK2]}
+
+        result = self.tasks.remove_task(BRANCH, 20)
+
+        self.storage.store_tasks.assert_not_called()
+        self.assertFalse(result)
+
+    def test_remove_task_should_return_false_when_wrong_branch(self):
+        self.storage.load_all_tasks.return_value = {BRANCH: [TASK1, TASK2]}
+
+        result = self.tasks.remove_task(BRANCH2, 0)
+
+        self.storage.store_tasks.assert_not_called()
+        self.assertFalse(result)
+
+    def test_get_done_tasks_returns_empty_list(self):
+        self.storage.load_all_done_tasks.return_value = dict()
+
+        result = self.tasks.get_done_tasks(BRANCH)
+
+        self.assertEqual([], result)
+
+    def test_get_done_tasks_return_all_branch_tasks(self):
+        self.storage.load_all_done_tasks.return_value = {BRANCH: [TASK1, TASK2]}
+
+        result = self.tasks.get_done_tasks(BRANCH)
+
+        self.assertEqual([TASK1, TASK2], result)
+
+    def test_set_task_done_should_return_false_when_wrong_index(self):
+        self.storage.load_all_tasks.return_value = {BRANCH: [TASK1, TASK2]}
+        self.storage.load_all_done_tasks.return_value = {}
+
+        result = self.tasks.set_task_done(BRANCH, 10)
+
+        self.assertFalse(result)
+        self.storage.store_tasks.assert_not_called()
+        self.storage.store_done_tasks.assert_not_called()
+
+    def test_set_task_done_should_return_true_when_index_exists(self):
+        self.storage.load_all_tasks.return_value = {BRANCH: [TASK1, TASK2]}
+        self.storage.load_all_done_tasks.return_value = {}
+
+        result = self.tasks.set_task_done(BRANCH, 1)
+
+        self.assertTrue(result)
+        #self.storage.store_tasks.assert_called_with({BRANCH: [TASK1]})
+        self.storage.store_done_tasks.assert_called_with({BRANCH: [TASK2]})
 
 
 if __name__ == '__main__':
