@@ -58,5 +58,20 @@ class TaskHandler:
             return True
         return False
 
+    def move_task(self, branch, old_pos, new_pos):
+        all_tasks = self.storage.load_all_tasks()
+        tasks = self.__get_list__(all_tasks, branch)
+        if len(tasks) > old_pos and len(tasks) > new_pos:
+            task = tasks.pop(old_pos)
+            tasks.insert(new_pos, task)
+            all_tasks[branch] = tasks
+            self.storage.store_tasks(all_tasks)
+            return True
+        else:
+            return False
+
+    def __is_valid_index__(self, list, index):
+        return len(list) > index
+
 
 

@@ -58,6 +58,9 @@ class Gits:
     def set_task_done(self, index):
         print("Done" if self.tasks.set_task_done(self.git.branch(), index) else "No such task")
 
+    def move_task(self, old_pos, new_pos):
+        print("Done" if self.tasks.move_task(self.git.branch(), old_pos, new_pos) else "Index error")
+
     def close_work(self):
         # TODO
         # Cleans up for a selected work branch.
@@ -77,7 +80,10 @@ class Gits:
         parser.add_argument("-t", help="Assign a task to current work branch", type=str)
         parser.add_argument("--tasks", help="List tasks assigned to current work branch", action="store_true")
         parser.add_argument("-r", help="Remove task by id", type=int)
-        parser.add_argument("-d", help="Set task done by id", type=int)
+        parser.add_argument("-d", "--done", help="Set task done by id", type=int)
+        parser.add_argument("-m", nargs='+', help="Move task in list", type=int)
+        parser.add_argument("--movetop", help="Move task to top in list", type=int)
+
         # task should have a date
         # should delete task
         # should complete task
@@ -103,12 +109,19 @@ class Gits:
         if args.tasks:
             self.print_tasks()
             return
-        if args.d:
-            self.set_task_done(args.d)
+        if args.done:
+            self.set_task_done(args.done)
             return
         if args.r:
             self.remove_task(args.r)
             return
+        if args.m:
+            self.move_task(args.m[0], args.m[1])
+            return
+        if args.movetop:
+            self.move_task(args.movetop, 0)
+            return
+
         self.print_current_work_branch()
 
 

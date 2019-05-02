@@ -7,6 +7,7 @@ BRANCH = "barbie"
 BRANCH2 = "barbie2"
 TASK1 = "go go go"
 TASK2 = "go go go2"
+TASK3 = "go go go3"
 
 
 class TestTasksMethods(unittest.TestCase):
@@ -100,6 +101,27 @@ class TestTasksMethods(unittest.TestCase):
         self.assertTrue(result)
         #self.storage.store_tasks.assert_called_with({BRANCH: [TASK1]})
         self.storage.store_done_tasks.assert_called_with({BRANCH: [TASK2]})
+
+    def test_move_task_should_return_false_when_wrong_index(self):
+        self.storage.load_all_tasks.return_value = {BRANCH: [TASK1, TASK2]}
+
+        result = self.tasks.move_task(BRANCH, 10, 0)
+
+        self.assertFalse(result)
+        self.storage.store_tasks.assert_not_called()
+
+        result = self.tasks.move_task(BRANCH, 0, 10)
+
+        self.assertFalse(result)
+        self.storage.store_tasks.assert_not_called()
+
+    def test_move_task_should_return_true_when_right_index(self):
+        self.storage.load_all_tasks.return_value = {BRANCH: [TASK1, TASK2, TASK3]}
+
+        result = self.tasks.move_task(BRANCH, 2, 0)
+
+        self.storage.store_tasks.assert_called_with({BRANCH: [TASK3, TASK1, TASK2]})
+        self.assertTrue(result)
 
 
 if __name__ == '__main__':
