@@ -13,7 +13,8 @@ class TestWorkBranchMethods(unittest.TestCase):
     def setUp(self):
         self.storage = Mock()
         self.git = Mock()
-        self.wb = Workbranch(storage=self.storage, git=self.git)
+        self.checkout = Mock()
+        self.wb = Workbranch(self.storage, self.checkout, self.git)
 
     def test_current_work_branch_should_be_None(self):
         self.storage.load_work_branches.return_value = []
@@ -64,7 +65,7 @@ class TestWorkBranchMethods(unittest.TestCase):
         result = self.wb.checkout_work_branch()
         # then
         self.assertEqual(None, result)
-        self.git.checkout.assert_not_called()
+        self.checkout.checkout.assert_not_called()
 
     def test_checkout_work_branch(self):
         # given
@@ -73,7 +74,7 @@ class TestWorkBranchMethods(unittest.TestCase):
         result = self.wb.checkout_work_branch()
         # then
         self.assertEqual(ONE, result)
-        self.git.checkout.assert_called_with(ONE)
+        self.checkout.checkout.assert_called_with(ONE)
 
     def test_do_not_checkout_work_branch_from_history_when_no_history(self):
         # given
@@ -82,7 +83,7 @@ class TestWorkBranchMethods(unittest.TestCase):
         result = self.wb.checkout_work_branch_from_history(1)
         # then
         self.assertEqual(None, result)
-        self.git.checkout.assert_not_called()
+        self.checkout.checkout.assert_not_called()
 
     def test_do_not_checkout_work_branch_from_history_when_history_short(self):
         # given
@@ -91,7 +92,7 @@ class TestWorkBranchMethods(unittest.TestCase):
         result = self.wb.checkout_work_branch_from_history(1)
         # then
         self.assertEqual(None, result)
-        self.git.checkout.assert_not_called()
+        self.checkout.checkout.assert_not_called()
 
     def test_checkout_work_branch_from_history(self):
         # given
@@ -100,7 +101,7 @@ class TestWorkBranchMethods(unittest.TestCase):
         result = self.wb.checkout_work_branch_from_history(0)
         # then
         self.assertEqual(ONE, result)
-        self.git.checkout.assert_called_with(ONE)
+        self.checkout.checkout.assert_called_with(ONE)
 
 
 if __name__ == '__main__':

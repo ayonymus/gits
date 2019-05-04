@@ -5,9 +5,10 @@ class Workbranch:
     """
         Handle work branches with git and local storage
     """
-    def __init__(self, storage, git=None):
-        self.git = git if not None else GitHelper()
+    def __init__(self, storage, checkout, git=None):
         self.storage = storage
+        self.checkout = checkout
+        self.git = git if not None else GitHelper()
 
     def get_work_branch(self):
         branches = self.storage.load_work_branches()
@@ -26,10 +27,11 @@ class Workbranch:
             self.storage.update_branch_history(branches)
         return branch
 
-    def checkout_work_branch(self):
-        branch = self.get_work_branch()
+    def checkout_work_branch(self, branch=None):
+        if branch is None:
+            branch = self.get_work_branch()
         if branch is not None:
-            self.git.checkout(branch)
+            self.checkout.checkout(branch)
         return branch
 
     def checkout_work_branch_from_history(self, index):
@@ -37,7 +39,7 @@ class Workbranch:
         branch = None
         if len(branches) > 0 and len(branches) > index:
             branch = branches[index]
-            self.git.checkout(branch)
+            self.checkout_work_branch(branch)
             return branch
         return branch
 
