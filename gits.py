@@ -76,6 +76,11 @@ class Gits:
     def checkout(self, branch):
         self.checkoutHistory.checkout(branch)
 
+    def checkout_history(self):
+        for i, branch in enumerate(self.checkoutHistory.get_checkout_history()):
+            print(i, branch)
+        print()
+
     def close_work(self):
         # TODO
         # Cleans up for a selected work branch.
@@ -101,7 +106,7 @@ class Gits:
         parser.add_argument("--movetop", help="Move task to top in list", type=int)
         parser.add_argument("--task", nargs=2, help="Assign a task to arbitrary branch. [0] branch name, [1] task", type=str)
         parser.add_argument("-c", help="Check out branch and add to history", type=str)
-
+        parser.add_argument("-ch", help="Check out history", action="store_true")
         # task should have a date
         # should delete task
         # should complete task
@@ -147,6 +152,9 @@ class Gits:
             return
         if args.c:
             self.checkout(args.c)
+            return
+        if args.ch:
+            self.checkout_history()
             return
         self.print_current_work_branch()
 

@@ -69,7 +69,10 @@ class Storage:
 
     # checkout history
     def load_checkout_history(self):
-        return self.__get_list__(self.__load__(), KEY_CHECKOUT_HISTORY)
+        try:
+            return self.__load__()[KEY_CHECKOUT_HISTORY]
+        except:
+            return None
 
     def store_checkout_history(self, branch_list):
         data = self.__load__()
