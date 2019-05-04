@@ -17,7 +17,7 @@ class TestCheckoutHistory(TestCase):
         self.checkout = CheckoutHistory(storage=self.storage, git=self.git)
 
     def test_checkout_store_branch(self):
-        self.storage.load_checkout_history.return_value = []
+        self.storage.load_checkout_history.return_value = None
 
         self.checkout.checkout(ONE)
 
@@ -25,7 +25,7 @@ class TestCheckoutHistory(TestCase):
         self.storage.store_checkout_history.assert_called_with([ONE])
 
     def test_checkout_not_store_branch_when_last_is_same(self):
-        self.storage.load_checkout_history.return_value = [ONE]
+        self.storage.load_checkout_history.return_value = [TWO, ONE]
 
         self.checkout.checkout(ONE)
 

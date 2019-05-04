@@ -8,9 +8,9 @@ class CheckoutHistory:
     def checkout(self, branch):
         if self.git.checkout(branch):
             history = self.storage.load_checkout_history()
-            if history is None:
+            if history is None or len(history) == 0:
                 self.storage.store_checkout_history([branch])
-            if history and history[-1] is not branch:
+            elif history[-1] != branch:
                 history.append(branch)
                 self.storage.store_checkout_history(history)
         else:
