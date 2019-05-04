@@ -5,6 +5,7 @@ KEY_BRANCH = 'workbranches'
 KEY_TASK = 'tasks'
 KEY_TASK_DONE = 'tasks_done'
 
+KEY_CHECKOUT_HISTORY = 'checkouts'
 
 PATH_STORAGE = "/.git/gits"
 
@@ -66,4 +67,12 @@ class Storage:
         data[KEY_TASK_DONE] = tasks
         self.__store__(data)
 
+    # checkout history
+    def load_checkout_history(self):
+        return self.__get_list__(self.__load__(), KEY_CHECKOUT_HISTORY)
+
+    def store_checkout_history(self, branch_list):
+        data = self.__load__()
+        data[KEY_CHECKOUT_HISTORY] = branch_list
+        self.__store__(data)
 

@@ -1,5 +1,6 @@
 import argparse
 
+from tools.checkout import CheckoutHistory
 from tools.githelper import GitHelper
 from tools.storage import Storage
 from tools.taskhandler import TaskHandler
@@ -19,6 +20,7 @@ class Gits:
         storage = Storage(self.git.work_dir())
         self.workbranch = Workbranch(storage, self.git)
         self.tasks = TaskHandler(storage)
+        self.checkoutHistory = CheckoutHistory(self.git, storage)
 
     def print_current_work_branch(self):
         current = self.workbranch.get_work_branch()
@@ -71,6 +73,9 @@ class Gits:
             print(i, task)
         print()
 
+    def checkout(self, branch):
+        self.checkoutHistory.checkout(branch)
+
     def close_work(self):
         # TODO
         # Cleans up for a selected work branch.
@@ -95,6 +100,7 @@ class Gits:
         parser.add_argument("-m", nargs=2, help="Move task in list", type=int)
         parser.add_argument("--movetop", help="Move task to top in list", type=int)
         parser.add_argument("--task", nargs=2, help="Assign a task to arbitrary branch. [0] branch name, [1] task", type=str)
+        parser.add_argument("-c", help="Check out branch and add to history", type=str)
 
         # task should have a date
         # should delete task
@@ -139,7 +145,9 @@ class Gits:
         if args.listdone:
             self.print_done()
             return
-
+        if args.c:
+            self.checkout(args.c)
+            return
         self.print_current_work_branch()
 
 

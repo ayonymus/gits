@@ -29,7 +29,8 @@ class GitHelper:
         try:
             self.repo.git.checkout(branch)
             return True
-        except git.exc.GitCommandError:
+        except git.exc.GitCommandError as e:
+            print(e)
             return False
 
     def work_dir(self):
