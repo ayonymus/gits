@@ -102,6 +102,13 @@ class TestTasksMethods(unittest.TestCase):
         #self.storage.store_tasks.assert_called_with({BRANCH: [TASK1]})
         self.storage.store_done_tasks.assert_called_with({BRANCH: [TASK2]})
 
+    def test_remove_done_tasks(self):
+        self.storage.load_all_done_tasks.return_value = {BRANCH: [TASK1, TASK2]}
+
+        self.tasks.remove_done_tasks(BRANCH)
+
+        self.storage.store_done_tasks.assert_called_with({})
+
     def test_move_task_should_return_false_when_wrong_index(self):
         self.storage.load_all_tasks.return_value = {BRANCH: [TASK1, TASK2]}
 

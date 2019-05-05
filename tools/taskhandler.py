@@ -34,6 +34,12 @@ class TaskHandler:
         all_done_tasks = self.storage.load_all_done_tasks()
         return self.__get_list__(all_done_tasks, branch)
 
+    def remove_done_tasks(self, branch):
+        all_done_tasks = self.storage.load_all_done_tasks()
+        if branch in all_done_tasks.keys():
+            all_done_tasks.pop(branch)
+            self.storage.store_done_tasks(all_done_tasks)
+
     def __get_list__(self, dictionary, key):
         if key in dictionary.keys():
             return dictionary[key]

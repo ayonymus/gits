@@ -47,4 +47,5 @@ class Cleanup:
         if result == GitHelper.ERROR:
             return self.ERROR
 
+
         return self.SUCCESS
