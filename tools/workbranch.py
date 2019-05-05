@@ -1,14 +1,12 @@
-from tools.githelper import GitHelper
-
 
 class Workbranch:
     """
         Handle work branches with git and local storage
     """
-    def __init__(self, storage, checkout, git=None):
+    def __init__(self, storage, checkout, git):
         self.storage = storage
         self.checkout = checkout
-        self.git = git if not None else GitHelper()
+        self.git = git
 
     def get_work_branch(self):
         branches = self.storage.load_work_branches()
@@ -42,5 +40,3 @@ class Workbranch:
             self.checkout_work_branch(branch)
             return branch
         return branch
-
-

@@ -8,6 +8,11 @@ class GitHelper:
     Wrapper class around git commands for easier usage and unit testing.
     """
 
+    SUCCESS = 0
+    ERROR = 1
+    NOT_FOUND = 2
+    NOT_MERGED = 3
+
     def __init__(self):
         try:
             self.repo = Repo(os.getcwd())
@@ -19,7 +24,7 @@ class GitHelper:
         try:
             self.repo.git.rev_parse('--verify', branch)
             return True
-        except:
+        except git.exc.GitCommandError:
             return False
 
     def branch(self):
@@ -35,3 +40,17 @@ class GitHelper:
 
     def work_dir(self):
         return self.repo.working_dir
+
+    def delete_branch(self, branch):
+        try:
+            self.repo.git.branch('-d', branch)
+            return self.SUCCESS
+        except git.exc.GitCommandError as e:
+            if 'not found.' in e.stderr:
+                return self.NOT_FOUND
+            elif 'not fully merged' in e.stderr:
+                return self.NOT_MERGED
+            else:
+                print(e.stderr)
+            return self.ERROR
+

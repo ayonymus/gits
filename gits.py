@@ -1,6 +1,7 @@
 import argparse
 
 from tools.checkout import CheckoutHistory
+from tools.cleanup import Cleanup
 from tools.githelper import GitHelper
 from tools.storage import Storage
 from tools.taskhandler import TaskHandler
@@ -18,9 +19,10 @@ class Gits:
     def __init__(self):
         self.git = GitHelper()
         storage = Storage(self.git.work_dir())
-        self.workbranch = Workbranch(storage, self.git)
         self.tasks = TaskHandler(storage)
         self.checkoutHistory = CheckoutHistory(self.git, storage)
+        self.workbranch = Workbranch(storage,self.checkoutHistory, self.git)
+        self.branch_cleanup = Cleanup(self.git, storage, self.workbranch, self.tasks)
 
     def print_current_work_branch(self):
         current = self.workbranch.get_work_branch()
@@ -81,15 +83,20 @@ class Gits:
             print(i, branch)
         print()
 
-    def close_work(self):
-        # TODO
-        # Cleans up for a selected work branch.
-        # 1 check left over tasks
-        # 2 remove from branch list
-        # 3 add to closed list
-        # 4 delete local branch
-        # 5 check if local and remove branch differ2
-        pass
+    def cleanup(self, branch):
+        result = self.branch_cleanup.cleanup(branch)
+        if Cleanup.SUCCESS == result:
+            print("Branch and tasks deleted")
+        if Cleanup.ERROR == result:
+            print("Something went wrong, branch could not be deleted")
+        if Cleanup.NOT_MASTER_OR_DEV == result:
+            print("Script should be called from 'master' or 'development' branch")
+        if Cleanup.HAS_OPEN_TASKS == result:
+            print("There are still open tasks. Review")
+        if Cleanup.NOT_EXIST == result:
+            print("Branch does not exist")
+        if Cleanup.NOT_MERGED == result:
+            print("Branch is not merged to", self.git.branch())
 
     def main(self):
         parser = argparse.ArgumentParser(description='Works. Branching related everyday tasks')
@@ -107,9 +114,9 @@ class Gits:
         parser.add_argument("--task", nargs=2, help="Assign a task to arbitrary branch. [0] branch name, [1] task", type=str)
         parser.add_argument("-c", help="Check out branch and add to history", type=str)
         parser.add_argument("-ch", help="Check out history", action="store_true")
+        parser.add_argument("--cleanup", help="Cleanup", type=str)
+
         # task should have a date
-        # should delete task
-        # should complete task
         # work branch could have a date
         # switch - commit everything to branch, commit title _WORK_IN_PROGRESS_ --
 
@@ -155,6 +162,9 @@ class Gits:
             return
         if args.ch:
             self.checkout_history()
+            return
+        if args.cleanup:
+            self.cleanup(args.cleanup)
             return
         self.print_current_work_branch()
 
