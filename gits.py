@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 
 from tools.checkout import CheckoutHistory
@@ -21,7 +23,7 @@ class Gits:
         storage = Storage(self.git.work_dir())
         self.tasks = TaskHandler(storage)
         self.checkoutHistory = CheckoutHistory(self.git, storage)
-        self.workbranch = Workbranch(storage,self.checkoutHistory, self.git)
+        self.workbranch = Workbranch(self.git, storage,self.checkoutHistory)
         self.branch_cleanup = Cleanup(self.git, storage, self.workbranch, self.tasks)
 
     def print_current_work_branch(self):
@@ -50,7 +52,7 @@ class Gits:
 
     def assign_to_branch(self, branch, task):
         self.tasks.assign_task(branch, task)
-        print("Assigned to '%s'" % branch)
+        print("Task assigned to '%s'" % branch)
 
     def print_tasks(self):
         br = self.git.branch()
@@ -98,75 +100,94 @@ class Gits:
         if Cleanup.NOT_MERGED == result:
             print("Branch is not merged to", self.git.branch())
 
-    def main(self):
-        parser = argparse.ArgumentParser(description='Works. Branching related everyday tasks')
-        parser.add_argument("-s", help="Set current work branch", action="store_true")
-        parser.add_argument("-w", help="Checkout current work branch", action="store_true")
-        parser.add_argument("-W", help="Checkout work branch from history by id", type=int)
-        parser.add_argument("-H", "--history", help="Show work branch history", action="store_true")
-        parser.add_argument("-t", help="Assign a task to current work branch", type=str)
-        parser.add_argument("--tasks", help="List tasks assigned to current work branch", action="store_true")
-        parser.add_argument("-r", help="Remove task by id", type=int)
-        parser.add_argument("--done", nargs=1, help="Set task done by id", type=int)
-        parser.add_argument("--listdone", help="Set task done by id", action="store_true")
-        parser.add_argument("-m", nargs=2, help="Move task in list", type=int)
-        parser.add_argument("--movetop", help="Move task to top in list", type=int)
-        parser.add_argument("--task", nargs=2, help="Assign a task to arbitrary branch. [0] branch name, [1] task", type=str)
-        parser.add_argument("-c", help="Check out branch and add to history", type=str)
-        parser.add_argument("-ch", help="Check out history", action="store_true")
-        parser.add_argument("--cleanup", help="Cleanup", type=str)
-
-        # task should have a date
-        # work branch could have a date
-        # switch - commit everything to branch, commit title _WORK_IN_PROGRESS_ --
-
-        args = parser.parse_args()
-        if args.history:
-            self.print_work_branch_history()
-            return
+    def handle_work(self, args):
         if args.s:
             self.set_work_branch()
-            return
-        if args.w:
+        elif args.c:
             self.checkout_work_branch()
-            return
-        if args.W:
+        elif args.ch:
             self.checkout_work_branch_history(args.W)
-            return
-        if args.t:
-            self.assign_task(args.t)
-            return
-        if args.tasks:
+        elif args.history:
+            self.print_work_branch_history()
+        else:
+            self.print_current_work_branch()
+
+    def handle_task(self, args):
+        if args.add is not None:
+            self.assign_task(args.add)
+        elif args.list:
             self.print_tasks()
-            return
-        if args.done:
+        elif args.done:
             self.set_task_done(args.done[0])
-            return
-        if args.r:
-            self.remove_task(args.r)
-            return
-        if args.m:
+        elif args.remove:
+            self.remove_task(args.remove)
+        elif args.m:
             self.move_task(args.m[0], args.m[1])
-            return
-        if args.movetop:
+        elif args.movetop:
             self.move_task(args.movetop, 0)
-            return
-        if args.task:
-            self.assign_to_branch(args.task[0], args.task[1])
-            return
-        if args.listdone:
+        elif args.assign:
+            self.assign_to_branch(args.assign[0], args.assign[1])
+        elif args.donelist:
             self.print_done()
-            return
-        if args.c:
-            self.checkout(args.c)
-            return
-        if args.ch:
+        else:
+            print("Provide more arguments or check help")
+
+    def handle_checkout(self, args):
+        if args.checkout is None:
+            print("Define a branch to check out")
+        elif args.checkout is not None:
+            self.checkout(args.checkout)
+        elif args.history:
             self.checkout_history()
-            return
-        if args.cleanup:
-            self.cleanup(args.cleanup)
-            return
-        self.print_current_work_branch()
+
+    def handle_cleanup(self, args):
+        if args.branch is None:
+            print("Define a branch to clean up")
+        elif args.branch is not None:
+            self.cleanup(args.branch[0])
+
+    def main(self):
+        parser = argparse.ArgumentParser(description='Keep track when working with multiple branches on git')
+        subparsers = parser.add_subparsers()
+
+        work_parser = subparsers.add_parser('work', help="Mark a 'work branch' when ")
+        work_parser.add_argument("current", nargs="?", type=str, default=None, help="Show current work branch")
+        work_parser.add_argument("-s", action="store_true", help="Set current work branch")
+        work_parser.add_argument("-c", action="store_true", help="Checkout current work branch")
+        work_parser.add_argument("-ch", type=int,  help="Checkout work branch from history by id")
+        work_parser.add_argument("-H", "--history", action="store_true", help="Show work branch history")
+        work_parser.set_defaults(func=self.handle_work)
+
+        task_parser = subparsers.add_parser('task', help="Remember tasks for a given branch")
+        task_parser.add_argument("add", nargs="?", type=str, default=None, help="Assign a task to current work branch")
+        task_parser.add_argument("-l", "--list", action="store_true", help="List tasks assigned to current work branch")
+        task_parser.add_argument("-d", "--done", nargs=1, type=int, help="Set task done by id")
+        task_parser.add_argument("--donelist", action="store_true", help="Set task done by id")
+        task_parser.add_argument("-r", "--remove", type=int, help="Remove task by id")
+        task_parser.add_argument("-m", nargs=2, type=int, help="Move task in list")
+        task_parser.add_argument("--movetop", type=int, help="Move task to top in list")
+        task_parser.add_argument("--assign", nargs=2, type=str,
+                                 help="Assign a task to arbitrary branch. [0] branch name, [1] task")
+        task_parser.set_defaults(func=self.handle_task)
+
+        checkout_parser = subparsers.add_parser('checkout', help="Keep a history of checked out branches")
+        checkout_parser.add_argument("checkout", nargs="?", type=str, default=None,
+                                     help="Check out branch and add to history")
+        checkout_parser.add_argument("-H", "--history", action="store_true", help="Check out history")
+        checkout_parser.set_defaults(func=self.handle_checkout)
+
+        cleanup_parser = subparsers.add_parser('cleanup', help="Clean up when done working with a branch")
+        cleanup_parser.add_argument("branch", nargs=1, type=str,
+                                    help="Check open tasks, remove done tasks for branch, delete branch. "
+                                         "Run from master or development branch")
+        cleanup_parser.set_defaults(func=self.handle_cleanup)
+
+        args = parser.parse_args()
+
+        try:
+            args.func(args)
+        except AttributeError:
+            pass
 
 
 if __name__ == '__main__':

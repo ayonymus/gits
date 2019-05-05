@@ -3,10 +3,10 @@ class Workbranch:
     """
         Handle work branches with git and local storage
     """
-    def __init__(self, storage, checkout, git):
+    def __init__(self, git, storage, checkout):
+        self.git = git
         self.storage = storage
         self.checkout = checkout
-        self.git = git
 
     def get_work_branch(self):
         branches = self.storage.load_work_branches()
