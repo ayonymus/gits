@@ -17,7 +17,8 @@ class Cleanup:
     """
 
     BRANCH_MASTER = "master"
-    BRANCH_DEV = "development"
+    BRANCH_DEV = "dev"
+    BRANCH_DEVELOPMENT = "development"
 
     SUCCESS = 0
     ERROR = 1
@@ -34,7 +35,7 @@ class Cleanup:
 
     def cleanup(self, branch):
         current = self.git.branch()
-        if current != self.BRANCH_MASTER and current != self.BRANCH_DEV:
+        if current != self.BRANCH_MASTER and current != self.BRANCH_DEV and current != self.BRANCH_DEVELOPMENT:
             return self.NOT_MASTER_OR_DEV
         if self.tasks.get_tasks(branch):
             return self.HAS_OPEN_TASKS
@@ -46,6 +47,5 @@ class Cleanup:
             return self.NOT_EXIST
         if result == GitHelper.ERROR:
             return self.ERROR
-
-
+        self.tasks.remove_done_tasks(branch)
         return self.SUCCESS

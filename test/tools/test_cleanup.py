@@ -66,5 +66,5 @@ class TestCleanup(TestCase):
 
         result = self.cleanup.cleanup(BRANCH)
 
-        self.tasks
+        self.tasks.remove_done_tasks.assert_called_with(BRANCH)
         self.assertEqual(Cleanup.SUCCESS, result)

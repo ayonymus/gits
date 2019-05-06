@@ -1,0 +1,30 @@
+
+export GITS="$HOME/gits" #path to this directory
+alias git_alias="cat $GITS/.git_aliases"
+
+## regular git commands
+alias add="git add"
+alias adda="git add ."
+alias br="git branch"
+# alias ch="git checkout"
+# alias chb="git checkout -b"
+alias com="git commit"
+alias coma="git commit --amend"
+alias coman="git commit --amend --no-edit"
+alias comm="git commit -m"
+alias cur="git rev-parse --abbrev-ref HEAD" # name of current branch
+alias f="git fetch"
+alias logs="git log --oneline"
+alias pull="git pull"
+alias push="git push"
+alias stat="git status"
+alias stash="git stash"
+
+## chained git commands
+alias stasha="git add . && git stash"                   # stash all current changes including untracked files
+# alias stashc="git add . && git commit -m '__Stash__'".  # create a stash commit on current branch (so it stays clear of other branches)
+
+# push current branch to remote server
+upstream() {
+	git push --set-upstream origin $(cur)
+}
