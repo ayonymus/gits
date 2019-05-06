@@ -30,6 +30,13 @@ class TestTasksMethods(unittest.TestCase):
 
         self.storage.store_tasks.assert_called_with({BRANCH: [TASK1, TASK2]})
 
+    def test_get_all_tasks_return_all_tasks(self):
+        self.storage.load_all_tasks.return_value = {BRANCH: [TASK1, TASK2]}
+
+        result = self.tasks.get_all_tasks()
+
+        self.assertEqual({BRANCH: [TASK1, TASK2]}, result)
+
     def test_get_tasks_return_all_branch_tasks(self):
         self.storage.load_all_tasks.return_value = {BRANCH: [TASK1, TASK2]}
 

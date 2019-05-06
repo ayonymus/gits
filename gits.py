@@ -61,6 +61,14 @@ class Gits:
             print(i, task)
         print()
 
+    def print_all_tasks(self):
+        all_tasks = self.tasks.get_all_tasks()
+        for branch in all_tasks.keys():
+            print("Tasks for %s branch:" % branch)
+            for i, task in enumerate(all_tasks[branch]):
+                print(i, task)
+            print()
+
     def remove_task(self, index):
         print("Done" if self.tasks.remove_task(self.git.branch(), index) else "No such task")
 
@@ -72,7 +80,7 @@ class Gits:
 
     def print_done(self):
         br = self.git.branch()
-        print("Done tasks for %s branch:" % br)
+        print("Done tasks for '%s' branch:" % br)
         for i, task in enumerate(self.tasks.get_done_tasks(br)):
             print(i, task)
         print()
@@ -117,6 +125,8 @@ class Gits:
             self.assign_task(args.add)
         elif args.list:
             self.print_tasks()
+        elif args.all:
+            self.print_all_tasks()
         elif args.done:
             self.set_task_done(args.done[0])
         elif args.remove:
@@ -161,6 +171,7 @@ class Gits:
         task_parser = subparsers.add_parser('task', help="Remember tasks for a given branch")
         task_parser.add_argument("add", nargs="?", type=str, default=None, help="Assign a task to current work branch")
         task_parser.add_argument("-l", "--list", action="store_true", help="List tasks assigned to current work branch")
+        task_parser.add_argument("--all", action="store_true", help="Print all open tasks")
         task_parser.add_argument("-d", "--done", nargs=1, type=int, help="Set task done by id")
         task_parser.add_argument("--donelist", action="store_true", help="Set task done by id")
         task_parser.add_argument("-r", "--remove", type=int, help="Remove task by id")

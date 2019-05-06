@@ -15,9 +15,11 @@ class TaskHandler:
             all_tasks[branch] = [task]
         self.storage.store_tasks(all_tasks)
 
+    def get_all_tasks(self):
+        return self.storage.load_all_tasks()
+
     def get_tasks(self, branch):
-        all_tasks = self.storage.load_all_tasks()
-        return self.__get_list__(all_tasks, branch)
+        return self.__get_list__(self.get_all_tasks(), branch)
 
     def remove_task(self, branch, index):
         all_tasks = self.storage.load_all_tasks()
