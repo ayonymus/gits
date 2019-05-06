@@ -94,6 +94,8 @@ class Gits:
         print()
 
     def cleanup(self, branch):
+        if not Gits.confirm("This will delete done notes and '%s' branch. Are you sure?" % branch):
+            return
         result = self.branch_cleanup.cleanup(branch)
         if Cleanup.SUCCESS == result:
             print("Branch and tasks deleted")
@@ -155,6 +157,15 @@ class Gits:
             print("Define a branch to clean up")
         elif args.branch is not None:
             self.cleanup(args.branch[0])
+
+    @staticmethod
+    def confirm(question):
+        print(question)
+        ans = input('(Y/N) << ').lower()
+        if ans in ['yes', 'y']:
+            return True
+        if ans in ['no', 'n']:
+            return False
 
     def main(self):
         parser = argparse.ArgumentParser(description='Keep track when working with multiple branches on git')
