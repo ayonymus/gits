@@ -5,8 +5,8 @@ class CheckoutHistory:
         self.git = git
         self.storage = storage
 
-    def checkout(self, branch):
-        if self.git.checkout(branch):
+    def checkout(self, branch, new_branch=False):
+        if self.git.checkout(branch, new_branch):
             history = self.storage.load_checkout_history()
             if history is None or len(history) == 0:
                 self.storage.store_checkout_history([branch])

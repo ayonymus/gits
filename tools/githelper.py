@@ -30,9 +30,12 @@ class GitHelper:
     def branch(self):
         return self.repo.active_branch.name
 
-    def checkout(self, branch):
+    def checkout(self, branch, new_branch=False):
         try:
-            self.repo.git.checkout(branch)
+            if new_branch:
+                self.repo.git.checkout('-b', branch)
+            else:
+                self.repo.git.checkout(branch)
             return True
         except git.exc.GitCommandError as e:
             print(e)

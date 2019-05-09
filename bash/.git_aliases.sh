@@ -1,6 +1,4 @@
-
-export GITS="$HOME/gits" #path to this directory
-alias git_alias="cat $GITS/.git_aliases"
+#!/bin/bash
 
 ## regular git commands
 alias add="git add"

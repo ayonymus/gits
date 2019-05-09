@@ -85,8 +85,8 @@ class Gits:
             print(i, task)
         print()
 
-    def checkout(self, branch):
-        self.checkoutHistory.checkout(branch)
+    def checkout(self, branch, new_branch=False):
+        self.checkoutHistory.checkout(branch, new_branch)
 
     def checkout_history(self):
         for i, branch in enumerate(self.checkoutHistory.get_checkout_history()):
@@ -145,10 +145,10 @@ class Gits:
             print("Provide more arguments or check help")
 
     def handle_checkout(self, args):
-        if args.checkout is None:
-            print("Define a branch to check out")
-        elif args.checkout is not None:
+        if args.checkout is not None:
             self.checkout(args.checkout)
+        elif args.branch:
+            self.checkout(args.branch, True)
         elif args.history:
             self.checkout_history()
 
@@ -194,7 +194,9 @@ class Gits:
 
         checkout_parser = subparsers.add_parser('checkout', help="Keep a history of checked out branches")
         checkout_parser.add_argument("checkout", nargs="?", type=str, default=None,
-                                     help="Check out branch and add to history")
+                                     help="Check out branch and add to checkout history")
+        checkout_parser.add_argument("-b", "--branch", type=str, default=None,
+                                     help="Create new branch, check out, and add to checkout history")
         checkout_parser.add_argument("-H", "--history", action="store_true", help="Check out history")
         checkout_parser.set_defaults(func=self.handle_checkout)
 
