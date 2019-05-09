@@ -86,7 +86,11 @@ class Gits:
         print()
 
     def checkout(self, branch, new_branch=False):
-        self.checkoutHistory.checkout(branch, new_branch)
+        result = self.checkoutHistory.checkout(branch, new_branch)
+        if result:
+            print("Current branch is \n %s" % branch)
+        else:
+            print("Could not check out branch")
 
     def checkout_history(self):
         for i, branch in enumerate(self.checkoutHistory.get_checkout_history()):

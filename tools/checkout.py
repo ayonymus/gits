@@ -13,8 +13,9 @@ class CheckoutHistory:
             elif history[-1] != branch:
                 history.append(branch)
                 self.storage.store_checkout_history(history)
+            return True
         else:
-            print("Select another branch")
+            return False
 
     def get_checkout_history(self):
         return self.storage.load_checkout_history()
