@@ -4,8 +4,6 @@
 alias add="git add"
 alias adda="git add ."
 alias br="git branch"
-# alias ch="git checkout"
-# alias chb="git checkout -b"
 alias com="git commit"
 alias coma="git commit --amend"
 alias coman="git commit --amend --no-edit"
@@ -20,7 +18,6 @@ alias stash="git stash"
 
 ## chained git commands
 alias stasha="git add . && git stash"                   # stash all current changes including untracked files
-# alias stashc="git add . && git commit -m '__Stash__'".  # create a stash commit on current branch (so it stays clear of other branches)
 
 # push current branch to remote server
 upstream() {
