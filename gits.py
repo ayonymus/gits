@@ -156,6 +156,8 @@ class Gits:
             self.checkout(args.branch, True)
         elif args.history:
             self.checkout_history()
+        elif args.suffix:
+            self.checkout("%1s_%2s" % (self.git.branch(), args.suffix), True)
 
     def handle_cleanup(self, args):
         if args.branch is None:
@@ -197,12 +199,15 @@ class Gits:
                                  help="Assign a task to arbitrary branch. [0] branch name, [1] task")
         task_parser.set_defaults(func=self.handle_task)
 
+        # Checkout
         checkout_parser = subparsers.add_parser('checkout', help="Keep a history of checked out branches")
         checkout_parser.add_argument("checkout", nargs="?", type=str, default=None,
                                      help="Check out branch and add to checkout history")
         checkout_parser.add_argument("-b", "--branch", type=str, default=None,
                                      help="Create new branch, check out, and add to checkout history")
         checkout_parser.add_argument("-H", "--history", action="store_true", help="Check out history")
+        checkout_parser.add_argument("--suffix", type=str,
+                                     help="Create and check out branch with current's name plus a suffix")
         checkout_parser.set_defaults(func=self.handle_checkout)
 
         cleanup_parser = subparsers.add_parser('cleanup', help="Clean up when done working with a branch")
