@@ -142,7 +142,8 @@ class Gits:
         elif args.donelist:
             self.print_done()
         else:
-            print("Provide more arguments or check help")
+            print("Provide more arguments or check help. Until that, here are all tasks:\n")
+            self.print_all_tasks()
 
     def handle_checkout(self, args):
         if args.checkout is not None:
