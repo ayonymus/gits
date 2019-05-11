@@ -30,6 +30,9 @@ class GitHelper:
     def branch(self):
         return self.repo.active_branch.name
 
+    def branches(self):
+        return self.repo.branches
+
     def checkout(self, branch, new_branch=False):
         try:
             if new_branch:

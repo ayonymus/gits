@@ -131,6 +131,10 @@ class Gits:
         for branch in whitelist:
             print(branch)
 
+    def iterative_cleanup(self):
+        for head in self.git.branches():
+            self.cleanup(head)
+
     def handle_work(self, args):
         if args.s:
             self.set_work_branch()
@@ -183,6 +187,8 @@ class Gits:
             self.cleanup_remove_from_whitelist(args.removew)
         elif args.whitelist:
             self.cleanup_print_whitelist()
+        elif args.iterative:
+            self.iterative_cleanup()
         elif args.branch is not None:
             self.cleanup(args.branch[0])
         elif args.branch is None:
@@ -242,6 +248,8 @@ class Gits:
                                     help="White list a branch so that it's not cleaned up")
         cleanup_parser.add_argument("--removew", type=str,
                                     help="Remove a branch from white list")
+        cleanup_parser.add_argument("--iterative", action="store_true",
+                                    help="Iterates over all local branches and offers to clean up if not white listed")
         cleanup_parser.add_argument("-w", "--whitelist", action="store_true", help="Print white list")
         cleanup_parser.set_defaults(func=self.handle_cleanup)
 
