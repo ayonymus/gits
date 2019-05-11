@@ -1,5 +1,11 @@
 #!/bin/bash
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+export GITS_HOME="$(dirname "$DIR")"
+
+alias gita="cat $DIR/.git_aliases.sh"
+
 ## regular git commands
 alias add="git add"
 alias adda="git add ."
@@ -17,9 +23,8 @@ alias stat="git status"
 alias stash="git stash"
 
 ## chained git commands
-alias stasha="git add . && git stash"                   # stash all current changes including untracked files
+# stash all current changes
+alias stasha="git add . && git stash"
 
 # push current branch to remote server
-upstream() {
-	git push --set-upstream origin $(cur)
-}
+alias upstream="git push --set-upstream origin $(cur)"
