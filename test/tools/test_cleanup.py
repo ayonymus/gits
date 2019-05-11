@@ -16,6 +16,8 @@ class TestCleanup(TestCase):
         self.workbranch = Mock()
         self.tasks = Mock()
         self.cleanup = Cleanup(self.git, self.storage, self.workbranch, self.tasks)
+        self.storage.load_cleanup_whitelist.return_value = []
+        self.tasks.get_tasks.return_value = []
 
     def test_cleanup_should_return_not_master(self):
         self.git.branch.return_value = BRANCH
@@ -44,7 +46,6 @@ class TestCleanup(TestCase):
     def test_cleanup_should_return_not_exist(self):
         self.git.branch.return_value = Cleanup.BRANCH_MASTER
         self.git.delete_branch.return_value = GitHelper.NOT_FOUND
-        self.tasks.get_tasks.return_value = []
 
         result = self.cleanup.cleanup(BRANCH)
 
@@ -53,7 +54,6 @@ class TestCleanup(TestCase):
     def test_cleanup_should_return_error(self):
         self.git.branch.return_value = Cleanup.BRANCH_MASTER
         self.git.delete_branch.return_value = GitHelper.ERROR
-        self.tasks.get_tasks.return_value = []
 
         result = self.cleanup.cleanup(BRANCH)
 
@@ -62,9 +62,44 @@ class TestCleanup(TestCase):
     def test_cleanup_should_return_success(self):
         self.git.branch.return_value = Cleanup.BRANCH_MASTER
         self.git.delete_branch.return_value = GitHelper.SUCCESS
-        self.tasks.get_tasks.return_value = []
 
         result = self.cleanup.cleanup(BRANCH)
 
         self.tasks.remove_done_tasks.assert_called_with(BRANCH)
         self.assertEqual(Cleanup.SUCCESS, result)
+
+    def test_add_to_whitelist_should_add(self):
+        self.storage.load_cleanup_whitelist.return_value = []
+
+        self.cleanup.add_to_whitelist(BRANCH)
+
+        self.storage.store_cleanup_whitelist.assert_called_with([BRANCH])
+
+    def test_add_to_whitelist_should_not_update(self):
+        self.storage.load_cleanup_whitelist.return_value = [BRANCH]
+
+        self.cleanup.add_to_whitelist(BRANCH)
+
+        self.storage.store_cleanup_whitelist.assert_not_called()
+
+    def test_remove_from_whitelist_should_change_nothing(self):
+        self.storage.load_cleanup_whitelist.return_value = []
+
+        self.cleanup.remove_from_whitelist(BRANCH)
+
+        self.storage.store_cleanup_whitelist.assert_not_called()
+
+    def test_remove_from_whitelist(self):
+        self.storage.load_cleanup_whitelist.return_value = [BRANCH]
+
+        self.cleanup.remove_from_whitelist(BRANCH)
+
+        self.storage.store_cleanup_whitelist.assert_called_with([])
+
+    def test_cleanup_should_return_whitelisted(self):
+        self.git.branch.return_value = Cleanup.BRANCH_MASTER
+        self.storage.load_cleanup_whitelist.return_value = [BRANCH]
+
+        result = self.cleanup.cleanup(BRANCH)
+
+        self.assertEqual(Cleanup.BRANCH_WHITELISTED, result)

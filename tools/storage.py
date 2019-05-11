@@ -7,6 +7,8 @@ KEY_TASK_DONE = 'tasks_done'
 
 KEY_CHECKOUT_HISTORY = 'checkouts'
 
+KEY_CLEANUP_WHITELIST = 'branch_whitelist'
+
 PATH_STORAGE = "/.git/gits"
 
 
@@ -79,3 +81,13 @@ class Storage:
         data[KEY_CHECKOUT_HISTORY] = branch_list
         self.__store__(data)
 
+    def load_cleanup_whitelist(self):
+        try:
+            return self.__load__()[KEY_CLEANUP_WHITELIST]
+        except:
+            return []
+
+    def store_cleanup_whitelist(self, white_list):
+        data = self.__load__()
+        data[KEY_CLEANUP_WHITELIST] = white_list
+        self.__store__(data)
