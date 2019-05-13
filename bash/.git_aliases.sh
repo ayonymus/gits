@@ -27,4 +27,6 @@ alias stash="git stash"
 alias stasha="git add . && git stash"
 
 # push current branch to remote server
-alias upstream="git push --set-upstream origin $(cur)"
+upstream() {
+	git push --set-upstream origin $(cur)
+}
