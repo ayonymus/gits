@@ -190,7 +190,7 @@ class Gits:
         elif args.iterative:
             self.iterative_cleanup()
         elif args.branch is not None:
-            self.cleanup(args.branch[0])
+            self.cleanup(args.branch)
         elif args.branch is None:
             print("Define a branch to clean up")
 
@@ -248,7 +248,7 @@ class Gits:
                                     help="White list a branch so that it's not cleaned up")
         cleanup_parser.add_argument("--removew", type=str,
                                     help="Remove a branch from white list")
-        cleanup_parser.add_argument("--iterative", action="store_true",
+        cleanup_parser.add_argument("--iterate", action="store_true",
                                     help="Iterates over all local branches and offers to clean up if not white listed")
         cleanup_parser.add_argument("-w", "--whitelist", action="store_true", help="Print white list")
         cleanup_parser.set_defaults(func=self.handle_cleanup)
