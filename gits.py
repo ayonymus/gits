@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import sys
 
 from tools.checkout import CheckoutHistory
 from tools.cleanup import Cleanup
@@ -120,7 +121,7 @@ class Gits:
 
     def cleanup_remove_from_whitelist(self, branch):
         result = self.branch_cleanup.remove_from_whitelist(branch)
-        if(result):
+        if result:
             print("'%s' removed from white list" % branch)
         else:
             print("'%s' not found in white list" % branch)
@@ -255,10 +256,11 @@ class Gits:
 
         args = parser.parse_args()
 
-        try:
-            args.func(args)
-        except AttributeError:
-            pass
+        if not len(sys.argv) > 1:
+            parser.print_help()
+            exit(0)
+
+        args.func(args)
 
 
 if __name__ == '__main__':
