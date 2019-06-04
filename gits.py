@@ -99,7 +99,7 @@ class Gits:
         print()
 
     def cleanup(self, branch):
-        if not Gits.confirm("This will delete done notes and '%s' branch. Are you sure?" % branch):
+        if not Gits.confirm("This will delete '%s' branch and notes marked as 'done'. Are you sure?" % branch):
             return
         result = self.branch_cleanup.cleanup(branch)
         if Cleanup.SUCCESS == result:
@@ -188,7 +188,7 @@ class Gits:
             self.cleanup_remove_from_whitelist(args.removew)
         elif args.whitelist:
             self.cleanup_print_whitelist()
-        elif args.iterative:
+        elif args.iterate:
             self.iterative_cleanup()
         elif args.branch is not None:
             self.cleanup(args.branch)
@@ -208,7 +208,7 @@ class Gits:
         parser = argparse.ArgumentParser(description='Keep track when working with multiple branches on git')
         subparsers = parser.add_subparsers()
 
-        work_parser = subparsers.add_parser('work', help="Mark a 'work branch' when ")
+        work_parser = subparsers.add_parser('work', help="Keep track of a currently important branch")
         work_parser.add_argument("current", nargs="?", type=str, default=None, help="Show current work branch")
         work_parser.add_argument("-s", action="store_true", help="Set current work branch")
         work_parser.add_argument("-c", action="store_true", help="Checkout current work branch")
