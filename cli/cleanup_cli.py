@@ -1,6 +1,7 @@
 from cli.tools import confirm
 from features.cleanup import Cleanup
 
+
 class CleanupCli:
 
     def __init__(self, git, branch_cleanup):

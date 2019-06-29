@@ -5,6 +5,7 @@ import sys
 
 from cli.checkout_cli import CheckoutCli
 from cli.cleanup_cli import CleanupCli
+from cli.work_cli import WorkCli
 from features.checkout import CheckoutHistory
 from features.cleanup import Cleanup
 from tools.githelper import GitHelper
@@ -27,30 +28,11 @@ class Gits:
         self.tasks = TaskHandler(storage)
         checkout_history = CheckoutHistory(self.git, storage)
         self.checkout_cli = CheckoutCli(self.git, checkout_history)
-        self.workbranch = Workbranch(self.git, storage, checkout_history)
 
-        branch_cleanup = Cleanup(self.git, storage, self.workbranch, self.tasks)
+        self.workbranch_cli = WorkCli(Workbranch(self.git, storage, checkout_history))
+
+        branch_cleanup = Cleanup(self.git, storage, self.workbranch_cli, self.tasks)
         self.cleanup = CleanupCli(self.git, branch_cleanup)
-
-    def print_current_work_branch(self):
-        current = self.workbranch.get_work_branch()
-        print("Current work branch is", ("not set" if current is None else current))
-
-    def print_work_branch_history(self):
-        for i, branch in enumerate(self.workbranch.get_work_branch_history()):
-            print(i, branch)
-
-    def set_work_branch(self):
-        branch = self.workbranch.set_work_branch()
-        print("Current work branch is %s" % branch)
-
-    def checkout_work_branch(self):
-        branch = self.workbranch.checkout_work_branch()
-        print("Switched to branch '%s'" % branch)
-
-    def checkout_work_branch_history(self, index):
-        branch = self.workbranch.checkout_work_branch_from_history(index)
-        print("No such branch" if branch is None else "Switched to branch '%s'" % branch)
 
     def assign_task(self, task):
         branch = self.git.branch()
@@ -91,18 +73,6 @@ class Gits:
             print(i, task)
         print()
 
-    def handle_work(self, args):
-        if args.s:
-            self.set_work_branch()
-        elif args.c:
-            self.checkout_work_branch()
-        elif args.ch:
-            self.checkout_work_branch_history(args.W)
-        elif args.history:
-            self.print_work_branch_history()
-        else:
-            self.print_current_work_branch()
-
     def handle_task(self, args):
         if args.add is not None:
             self.assign_task(args.add)
@@ -130,14 +100,6 @@ class Gits:
         parser = argparse.ArgumentParser(description='Keep track when working with multiple branches on git')
         subparsers = parser.add_subparsers()
 
-        work_parser = subparsers.add_parser('work', help="Keep track of a currently important branch")
-        work_parser.add_argument("current", nargs="?", type=str, default=None, help="Show current work branch")
-        work_parser.add_argument("-s", action="store_true", help="Set current work branch")
-        work_parser.add_argument("-c", action="store_true", help="Checkout current work branch")
-        work_parser.add_argument("-ch", type=int,  help="Checkout work branch from history by id")
-        work_parser.add_argument("-H", "--history", action="store_true", help="Show work branch history")
-        work_parser.set_defaults(func=self.handle_work)
-
         task_parser = subparsers.add_parser('task', help="Remember tasks for a given branch")
         task_parser.add_argument("add", nargs="?", type=str, default=None, help="Assign a task to current work branch")
         task_parser.add_argument("-l", "--list", action="store_true", help="List tasks assigned to current work branch")
@@ -151,6 +113,7 @@ class Gits:
                                  help="Assign a task to arbitrary branch. [0] branch name, [1] task")
         task_parser.set_defaults(func=self.handle_task)
 
+        self.workbranch_cli.add_subparser(subparsers)
         self.cleanup.add_subparser(subparsers)
         self.checkout_cli.add_subparser(subparsers)
 
