@@ -9,10 +9,10 @@ from cli.tasks_cli import TasksCli
 from cli.work_cli import WorkCli
 from features.checkout import CheckoutHistory
 from features.cleanup import Cleanup
+from features.taskhandler import TaskHandler
+from features.workbranch import Workbranch
 from tools.githelper import GitHelper
 from tools.storage import Storage
-from tools.taskhandler import TaskHandler
-from tools.workbranch import Workbranch
 
 
 class Gits:

@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock
 
-from tools.taskhandler import TaskHandler
+from features.taskhandler import TaskHandler
 
 BRANCH = "barbie"
 BRANCH2 = "barbie2"

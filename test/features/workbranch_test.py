@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock
 
-from tools.workbranch import Workbranch
+from features.workbranch import Workbranch
 
 ONE = 'one'
 TWO = 'two'
