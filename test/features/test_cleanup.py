@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
-from tools.cleanup import Cleanup
+from features.cleanup import Cleanup
 from tools.githelper import GitHelper
 
 ONE = "one"

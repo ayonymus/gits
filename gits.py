@@ -4,8 +4,9 @@ import argparse
 import sys
 
 from cli.checkout_cli import CheckoutCli
+from cli.cleanup_cli import CleanupCli
 from features.checkout import CheckoutHistory
-from tools.cleanup import Cleanup
+from features.cleanup import Cleanup
 from tools.githelper import GitHelper
 from tools.storage import Storage
 from tools.taskhandler import TaskHandler
@@ -27,7 +28,9 @@ class Gits:
         checkout_history = CheckoutHistory(self.git, storage)
         self.checkout_cli = CheckoutCli(self.git, checkout_history)
         self.workbranch = Workbranch(self.git, storage, checkout_history)
-        self.branch_cleanup = Cleanup(self.git, storage, self.workbranch, self.tasks)
+
+        branch_cleanup = Cleanup(self.git, storage, self.workbranch, self.tasks)
+        self.cleanup = CleanupCli(self.git, branch_cleanup)
 
     def print_current_work_branch(self):
         current = self.workbranch.get_work_branch()
@@ -88,44 +91,6 @@ class Gits:
             print(i, task)
         print()
 
-    def cleanup(self, branch):
-        if not Gits.confirm("This will delete '%s' branch and notes marked as 'done'. Are you sure?" % branch):
-            return
-        result = self.branch_cleanup.cleanup(branch)
-        if Cleanup.SUCCESS == result:
-            print("Branch and tasks deleted")
-        if Cleanup.ERROR == result:
-            print("Something went wrong, branch could not be deleted")
-        if Cleanup.NOT_MASTER_OR_DEV == result:
-            print("Script should be called from 'master' or 'development' branch")
-        if Cleanup.HAS_OPEN_TASKS == result:
-            print("There are still open tasks. Review")
-        if Cleanup.NOT_EXIST == result:
-            print("Branch does not exist")
-        if Cleanup.NOT_MERGED == result:
-            print("Branch is not merged to", self.git.branch())
-
-    def cleanup_add_whitelist(self, branch):
-        self.branch_cleanup.add_to_whitelist(branch)
-        print("'%s' added to white list" % branch)
-
-    def cleanup_remove_from_whitelist(self, branch):
-        result = self.branch_cleanup.remove_from_whitelist(branch)
-        if result:
-            print("'%s' removed from white list" % branch)
-        else:
-            print("'%s' not found in white list" % branch)
-
-    def cleanup_print_whitelist(self):
-        whitelist = self.branch_cleanup.get_whitelist()
-        print("White listed branches:")
-        for branch in whitelist:
-            print(branch)
-
-    def iterative_cleanup(self):
-        for head in self.git.branches():
-            self.cleanup(head)
-
     def handle_work(self, args):
         if args.s:
             self.set_work_branch()
@@ -161,29 +126,6 @@ class Gits:
             print("Provide more arguments or check help. Until that, here are all tasks:\n")
             self.print_tasks()
 
-    def handle_cleanup(self, args):
-        if args.addw:
-            self.cleanup_add_whitelist(args.addw)
-        elif args.removew:
-            self.cleanup_remove_from_whitelist(args.removew)
-        elif args.whitelist:
-            self.cleanup_print_whitelist()
-        elif args.iterate:
-            self.iterative_cleanup()
-        elif args.branch is not None:
-            self.cleanup(args.branch)
-        elif args.branch is None:
-            print("Define a branch to clean up")
-
-    @staticmethod
-    def confirm(question):
-        print(question)
-        ans = input('(Y/N) << ').lower()
-        if ans in ['yes', 'y']:
-            return True
-        if ans in ['no', 'n']:
-            return False
-
     def main(self):
         parser = argparse.ArgumentParser(description='Keep track when working with multiple branches on git')
         subparsers = parser.add_subparsers()
@@ -209,20 +151,7 @@ class Gits:
                                  help="Assign a task to arbitrary branch. [0] branch name, [1] task")
         task_parser.set_defaults(func=self.handle_task)
 
-        # Cleanup
-        cleanup_parser = subparsers.add_parser('cleanup', help="Clean up when done working with a branch")
-        cleanup_parser.add_argument("branch", nargs="?", type=str, default=None,
-                                    help="Check open tasks, remove done tasks for branch, delete branch. "
-                                         "Run from master or development branch")
-        cleanup_parser.add_argument("--addw", type=str,
-                                    help="White list a branch so that it's not cleaned up")
-        cleanup_parser.add_argument("--removew", type=str,
-                                    help="Remove a branch from white list")
-        cleanup_parser.add_argument("--iterate", action="store_true",
-                                    help="Iterates over all local branches and offers to clean up if not white listed")
-        cleanup_parser.add_argument("-w", "--whitelist", action="store_true", help="Print white list")
-        cleanup_parser.set_defaults(func=self.handle_cleanup)
-
+        self.cleanup.add_subparser(subparsers)
         self.checkout_cli.add_subparser(subparsers)
 
         args = parser.parse_args()
