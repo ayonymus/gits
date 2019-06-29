@@ -3,6 +3,7 @@
 import argparse
 import sys
 
+from cli.checkout_cli import CheckoutCli
 from features.checkout import CheckoutHistory
 from tools.cleanup import Cleanup
 from tools.githelper import GitHelper
@@ -23,8 +24,9 @@ class Gits:
         self.git = GitHelper()
         storage = Storage(self.git.work_dir())
         self.tasks = TaskHandler(storage)
-        self.checkoutHistory = CheckoutHistory(self.git, storage)
-        self.workbranch = Workbranch(self.git, storage,self.checkoutHistory)
+        checkout_history = CheckoutHistory(self.git, storage)
+        self.checkout_cli = CheckoutCli(self.git, checkout_history)
+        self.workbranch = Workbranch(self.git, storage, checkout_history)
         self.branch_cleanup = Cleanup(self.git, storage, self.workbranch, self.tasks)
 
     def print_current_work_branch(self):
@@ -84,18 +86,6 @@ class Gits:
         print("Done tasks for '%s' branch:" % br)
         for i, task in enumerate(self.tasks.get_done_tasks(br)):
             print(i, task)
-        print()
-
-    def checkout(self, branch, new_branch=False):
-        result = self.checkoutHistory.checkout(branch, new_branch)
-        if result:
-            print("Current branch is \n %s" % branch)
-        else:
-            print("Could not check out branch")
-
-    def checkout_history(self):
-        for i, branch in enumerate(self.checkoutHistory.get_checkout_history()):
-            print(i, branch)
         print()
 
     def cleanup(self, branch):
@@ -171,16 +161,6 @@ class Gits:
             print("Provide more arguments or check help. Until that, here are all tasks:\n")
             self.print_tasks()
 
-    def handle_checkout(self, args):
-        if args.checkout is not None:
-            self.checkout(args.checkout)
-        elif args.branch:
-            self.checkout(args.branch, True)
-        elif args.history:
-            self.checkout_history()
-        elif args.suffix:
-            self.checkout("%1s_%2s" % (self.git.branch(), args.suffix), True)
-
     def handle_cleanup(self, args):
         if args.addw:
             self.cleanup_add_whitelist(args.addw)
@@ -229,17 +209,6 @@ class Gits:
                                  help="Assign a task to arbitrary branch. [0] branch name, [1] task")
         task_parser.set_defaults(func=self.handle_task)
 
-        # Checkout
-        checkout_parser = subparsers.add_parser('checkout', help="Keep a history of checked out branches")
-        checkout_parser.add_argument("checkout", nargs="?", type=str, default=None,
-                                     help="Check out branch and add to checkout history")
-        checkout_parser.add_argument("-b", "--branch", type=str, default=None,
-                                     help="Create new branch, check out, and add to checkout history")
-        checkout_parser.add_argument("-H", "--history", action="store_true", help="Check out history")
-        checkout_parser.add_argument("--suffix", type=str,
-                                     help="Create and check out branch with current's name plus a suffix")
-        checkout_parser.set_defaults(func=self.handle_checkout)
-
         # Cleanup
         cleanup_parser = subparsers.add_parser('cleanup', help="Clean up when done working with a branch")
         cleanup_parser.add_argument("branch", nargs="?", type=str, default=None,
@@ -253,6 +222,8 @@ class Gits:
                                     help="Iterates over all local branches and offers to clean up if not white listed")
         cleanup_parser.add_argument("-w", "--whitelist", action="store_true", help="Print white list")
         cleanup_parser.set_defaults(func=self.handle_cleanup)
+
+        self.checkout_cli.add_subparser(subparsers)
 
         args = parser.parse_args()
 
