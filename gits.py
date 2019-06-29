@@ -3,7 +3,7 @@
 import argparse
 import sys
 
-from tools.checkout import CheckoutHistory
+from features.checkout import CheckoutHistory
 from tools.cleanup import Cleanup
 from tools.githelper import GitHelper
 from tools.storage import Storage

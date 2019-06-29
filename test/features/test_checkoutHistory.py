@@ -2,7 +2,7 @@ import unittest
 from unittest import TestCase
 from unittest.mock import Mock
 
-from tools.checkout import CheckoutHistory
+from features.checkout import CheckoutHistory
 
 ONE = 'one'
 TWO = 'two'
