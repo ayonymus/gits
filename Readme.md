@@ -1,6 +1,6 @@
 # gits
 
-A collection of scripts to simplify some of everyday tasks while working with `git` in a collaborative environment, possibly working with some form of git flow.
+A collection of scripts to simplify some of everyday tasks while working with `git` in a collaborative environment.
 
 ## Usage
 Make sure you have `python 3` and `gitpython` installed.
@@ -49,7 +49,7 @@ Before deleting, the script checks if:
 * the branch is merged to 'development' or 'master' branch (i.e. the current checked out branch)
 * has open tasks
 * is branch on white list
-Delete has to be confirmed in a prompt.
+* delete is confirmed in a prompt
 
 The most powerful feature is the `--iterate` flag, which iterates over all the local branches and calls the `cleanup` function.
 Unmerged branches are left intact, those have to be removed manually.
