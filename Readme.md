@@ -2,10 +2,11 @@
 
 A collection of scripts to simplify some of everyday tasks while working with `git` in a collaborative environment.
 
-## Usage
+
+## Usage
 Make sure you have `python 3` and `gitpython` installed.
 
-Clone the project to your linux/mac machine, and create an `alias` to `.gits.py`.
+Clone the project to your __linux__ or __mac__ machine, and create an `alias` to `.gits.py`.
 Alternatively, for easier use, make an alias to `bash/.gits_aliases` that already has a few short cuts.
 
 Run `.gits.py` and see the available options.
@@ -14,16 +15,27 @@ Some extra information about your work is stored in your project's `.git` folder
 
 
 ## Features
-The `-h` option fairly well describes each function.
+This is not a comprehensive list of all functsions. The `--help` fairly well describes each function.
+To see the list of features:
+
+`gits.py`
+
+Feature help:
+`gits.py {feature} -h`
 
 ### checkout
-`git checkout` with history.
 Forwards commands to `git checkout`, but also saves the checkout target to a list.
+
+To view the history: 
+`gits.py checkout -H`
+
+To check out a branch from the history:
+`gits.py checkout -bh {branch id}`
 
 ### work
 Mark a branch as "work branch" so that it's easy to get back to it when you are working with multiple branches.
 
-Suppose you work on branch `ticket-1234-killer_feature`, but you have to check out 'ticket-1236-weird_bug' branch
+Suppose you work on branch `ticket-1234-killer_feature`, but you have to check out `ticket-1236-weird_bug` branch for review:
 
 ```
 ## sets current branch 'ticket-1234-killer_feature' as a work branch
