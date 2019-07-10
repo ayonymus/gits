@@ -22,10 +22,6 @@ alias push="git push"
 alias stat="git status"
 alias stash="git stash"
 
-## chained git commands
-# stash all current changes
-alias stasha="git add . && git stash"
-
 # push current branch to remote server
 upstream() {
 	git push --set-upstream origin $(cur)
