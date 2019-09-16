@@ -19,7 +19,7 @@ class WorkCli:
         elif args.c:
             self.checkout_work_branch()
         elif args.ch:
-            self.checkout_work_branch_history(args.W)
+            self.checkout_work_branch_history(args.ch)
         elif args.history:
             self.print_work_branch_history()
         else:
