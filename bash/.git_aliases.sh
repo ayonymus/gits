@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+DIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
 export GITS_HOME="$(dirname "$DIR")"
 
@@ -25,4 +25,9 @@ alias stash="git stash"
 # push current branch to remote server
 upstream() {
 	git push --set-upstream origin $(cur)
+}
+
+# find remote branch by name
+findbr() {
+	git branch -r |grep $1
 }
