@@ -15,7 +15,7 @@ class GitHelper:
 
     def __init__(self):
         try:
-            self.repo = Repo(os.getcwd())
+            self.repo = Repo(os.getcwd(), search_parent_directories=True)
         except git.exc.InvalidGitRepositoryError:
             print('Script should be called from root directory of a git repository. Exit')
             exit(1)
