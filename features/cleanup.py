@@ -18,7 +18,7 @@ class Cleanup:
 
     BRANCH_MASTER = "master"
     BRANCH_DEV = "dev"
-    BRANCH_DEVELOPMENT = "development"
+    BRANCH_DEVELOPMENT = "develop"
 
     SUCCESS = 0
     ERROR = 1

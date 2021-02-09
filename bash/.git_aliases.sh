@@ -14,6 +14,7 @@ alias com="git commit"
 alias coma="git commit --amend"
 alias coman="git commit --amend --no-edit"
 alias comm="git commit -m"
+alias comn="git commit --no-verify -m"
 alias cur="git rev-parse --abbrev-ref HEAD" # name of current branch
 alias f="git fetch"
 alias logs="git log --oneline"
