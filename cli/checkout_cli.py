@@ -31,6 +31,9 @@ class CheckoutCli:
             self.checkout("%1s_%2s" % (self.git.branch(), args.suffix), True)
 
     def checkout(self, branch, new_branch=False):
+        if branch == '.':
+            self.git.checkout('.')
+            return
         result = self.checkoutHistory.checkout(branch, new_branch)
         if result:
             print("Current branch is \n %s" % branch)
