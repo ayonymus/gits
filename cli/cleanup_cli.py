@@ -7,6 +7,7 @@ from features.cleanup import Cleanup
 OK = 0
 SKIP = 1
 BREAK = 2
+DONE = 10
 
 class CleanupCli:
 
@@ -53,6 +54,7 @@ class CleanupCli:
         result = self.branch_cleanup.cleanup(branch)
         if Cleanup.SUCCESS == result:
             print("Branch and tasks deleted")
+            return DONE
         if Cleanup.ERROR == result:
             print("Something went wrong, branch could not be deleted")
         if Cleanup.HAS_OPEN_TASKS == result:
@@ -108,3 +110,6 @@ class CleanupCli:
             elif result is CANCEL:
                 print('Cleanup cancelled')
                 break
+            elif result is DONE:
+                cleaned.append(branch.name)
+        print("Branches removed: ", cleaned)
