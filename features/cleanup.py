@@ -16,13 +16,9 @@ class Cleanup:
 
     """
 
-    BRANCH_MASTER = "master"
-    BRANCH_DEV = "dev"
-    BRANCH_DEVELOPMENT = "develop"
-
     SUCCESS = 0
     ERROR = 1
-    NOT_MASTER_OR_DEV = 2
+    NOT_MAIN_BRANCH = 2
     HAS_OPEN_TASKS = 3
     NOT_EXIST = 4
     NOT_MERGED = 5
@@ -35,6 +31,17 @@ class Cleanup:
         self.storage = storage
         self.workbranch = workbranch
         self.tasks = tasks
+
+    def has_main_branch(self): return len(self.storage.load_main_branches()) > 0
+    
+    def add_main_branch(self, branch):
+        if self.git.is_existing_branch(branch): 
+            self.storage.store_main_branch([branch])
+            return True
+        else:
+            return False
+    
+    def get_main_branch(self): return self.storage.load_main_branches()[0]
 
     def add_to_whitelist(self, branch):
         white_list = self.storage.load_cleanup_whitelist()
@@ -56,8 +63,8 @@ class Cleanup:
 
     def validate_branch(self, branch):
         current = self.git.branch().strip()
-        if current != self.BRANCH_MASTER and current != self.BRANCH_DEV and current != self.BRANCH_DEVELOPMENT:
-            return self.NOT_MASTER_OR_DEV
+        if current not in self.storage.load_main_branches():
+            return self.NOT_MAIN_BRANCH
         if current == branch:
             return self.CURRENT_BRANCH
         if branch in self.storage.load_cleanup_whitelist():

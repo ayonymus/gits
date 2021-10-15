@@ -1,5 +1,4 @@
 from cli.tools import confirm
-from cli.tools import YES
 from cli.tools import CANCEL
 
 from features.cleanup import Cleanup
@@ -27,6 +26,10 @@ class CleanupCli:
         cleanup_parser.add_argument("--iterate", action="store_true",
                                     help="Iterates over all local branches and offers to clean up if not white listed")
         cleanup_parser.add_argument("-w", "--whitelist", action="store_true", help="Print white list")
+        cleanup_parser.add_argument("-m", "--main", action="store_true", help="Print main branch")
+        cleanup_parser.add_argument("--setmain", action="store_true", help="Set the main branch")
+        
+        
         cleanup_parser.set_defaults(func=self.handle_cleanup)
 
     def handle_cleanup(self, args):
@@ -40,8 +43,12 @@ class CleanupCli:
             self.iterative_cleanup()
         elif args.branch is not None:
             self.cleanup(args.branch, False)
+        elif args.main:
+            print("Main branch is %s" % self.branch_cleanup.get_main_branch())
+        elif args.setmain:
+            self.set_main_branch()
         elif args.branch is None:
-            print("Define a branch to clean up")
+            print("Please define a branch to clean up")
 
     def cleanup(self, branch, iterate):
         validatation = self.__validate_branch__(branch) 
@@ -65,8 +72,12 @@ class CleanupCli:
 
     def __validate_branch__(self, branch):
         validate = self.branch_cleanup.validate_branch(branch.name)
-        if validate == Cleanup.NOT_MASTER_OR_DEV:
-            print("Cleanup should be started from 'master' or 'development' branch")
+        if validate == Cleanup.MAIN_BRANCH_NOT_SET:
+            print("You must set up a main branch before doing a cleanup.")
+            self.set_main_branch()            
+            return BREAK
+        elif validate == Cleanup.NOT_MAIN_BRANCH:
+            print("Cleanup should be started from the main branch! (%s)" % self.branch_cleanup.get_main_branch())
             return BREAK
         elif validate == Cleanup.CURRENT_BRANCH:
             print("Skipping currently checked out branch ('%s')" % branch)
@@ -79,6 +90,16 @@ class CleanupCli:
             return SKIP
         else: 
             return OK
+
+    def set_main_branch(self):
+        ans = input("Please enter main branch name: ").lower()
+        result = self.branch_cleanup.add_main_branch(ans)
+        if (result):
+            print("Main branch is now: %s" % ans )
+        else:
+            print("No such branch in repository!")
+            exit(1)
+
 
     def cleanup_add_whitelist(self, branch):
         self.branch_cleanup.add_to_whitelist(branch)
@@ -99,10 +120,19 @@ class CleanupCli:
 
     def iterative_cleanup(self):
         cleaned = []
+        skipped = []
         for branch in self.git.branches():
             result = self.cleanup(branch, True)
-            if result is BREAK :
+            if result is BREAK:
                 break
+            elif result is SKIP:
+                skipped.append(branch.name)
             elif result is DONE:
                 cleaned.append(branch.name)
-        print("Branches removed: ", cleaned)
+        print("\n")   
+        if len(cleaned) > 0 or len(skipped) > 0:
+            print("Summary")
+            print("Removed: ", cleaned)
+            print("Skipped: ", skipped)
+
+        
