@@ -27,6 +27,8 @@ class Cleanup:
     NOT_EXIST = 4
     NOT_MERGED = 5
     BRANCH_WHITELISTED = 6
+    CURRENT_BRANCH = 7
+    MAIN_BRANCH_NOT_SET = 8
 
     def __init__(self, git, storage, workbranch, tasks):
         self.git = git
@@ -52,8 +54,16 @@ class Cleanup:
     def get_whitelist(self):
         return self.storage.load_cleanup_whitelist()
 
+    def validate_branch(self, branch):
+        current = self.git.branch().strip()
+        if current == branch:
+            return self.CURRENT_BRANCH
+
+
     def cleanup(self, branch):
         current = self.git.branch()
+        if current == branch:
+            return self.CURRENT_BRANCH
         if current != self.BRANCH_MASTER and current != self.BRANCH_DEV and current != self.BRANCH_DEVELOPMENT:
             return self.NOT_MASTER_OR_DEV
         if self.tasks.get_tasks(branch):
