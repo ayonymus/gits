@@ -14,10 +14,11 @@ class TestWorkBranchMethods(unittest.TestCase):
         self.storage = Mock()
         self.git = Mock()
         self.checkout = Mock()
-        self.wb = Workbranch(self.storage, self.checkout, self.git)
+        self.wb = Workbranch(self.git, self.storage, self.checkout)
 
     def test_current_work_branch_should_be_None(self):
         self.storage.load_work_branches.return_value = []
+        print(self.wb.get_work_branch())
         self.assertIsNone(self.wb.get_work_branch())
 
     def test_current_work_branch_is_last_in_history(self):
