@@ -4,6 +4,9 @@ from cli.tools import CANCEL
 
 from features.cleanup import Cleanup
 
+OK = 0
+SKIP = 1
+BREAK = 2
 
 class CleanupCli:
 
@@ -40,6 +43,9 @@ class CleanupCli:
             print("Define a branch to clean up")
 
     def cleanup(self, branch, iterate):
+        validatation = self.__validate_branch__(branch) 
+        if validatation != OK: return validatation
+        
         confirmation = confirm("This will delete '%s' branch and notes marked as 'done'. Are you sure?" % branch, iterate)
         if confirmation != YES:
             return confirmation
@@ -49,14 +55,26 @@ class CleanupCli:
             print("Branch and tasks deleted")
         if Cleanup.ERROR == result:
             print("Something went wrong, branch could not be deleted")
-        if Cleanup.NOT_MASTER_OR_DEV == result:
-            print("Script should be called from 'master' or 'development' branch")
         if Cleanup.HAS_OPEN_TASKS == result:
-            print("There are still open tasks. Review")
+            print("There are still open tasks. Please review")
         if Cleanup.NOT_EXIST == result:
             print("Branch does not exist")
         if Cleanup.NOT_MERGED == result:
             print("Branch is not merged!", self.git.branch())
+
+    def __validate_branch__(self, branch):
+        validate = self.branch_cleanup.validate_branch(branch.name)
+        if validate == Cleanup.NOT_MASTER_OR_DEV:
+            print("Cleanup should be started from 'master' or 'development' branch")
+            return BREAK
+        elif validate == Cleanup.CURRENT_BRANCH:
+            print("Skipping currently checked out branch ('%s')" % branch)
+            return SKIP
+        elif validate == Cleanup.BRANCH_IGNORED:
+            print("Skipping branch on ignore list ('%s')" % branch)
+            return SKIP
+        else: 
+            return OK
 
     def cleanup_add_whitelist(self, branch):
         self.branch_cleanup.add_to_whitelist(branch)
@@ -76,12 +94,17 @@ class CleanupCli:
             print(branch)
 
     def iterative_cleanup(self):
+        cleaned = []
         for branch in self.git.branches():
-            validate = self.branch_cleanup.validate_branch(branch.name)
-            if validate == Cleanup.CURRENT_BRANCH:
-                print("Skipping current branch... \n") 
-            else:
-                result = self.cleanup(branch, True)
-                if result == CANCEL:
-                    print('Cleanup cancelled')
-                    break
+            # validate = self.branch_cleanup.validate_branch(branch.name)
+            # if validate == Cleanup.CURRENT_BRANCH:
+            #     print("Skipping current branch ('%s')\n" % branch)
+            # elif validate == Cleanup.BRANCH_IGNORED:
+            #     print("Skipping branch on ignore list ('%s')\n" % branch)
+            # else:
+            result = self.cleanup(branch, True)
+            if result is BREAK :
+                break
+            elif result is CANCEL:
+                print('Cleanup cancelled')
+                break

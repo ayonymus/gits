@@ -26,7 +26,7 @@ class Cleanup:
     HAS_OPEN_TASKS = 3
     NOT_EXIST = 4
     NOT_MERGED = 5
-    BRANCH_WHITELISTED = 6
+    BRANCH_IGNORED = 6
     CURRENT_BRANCH = 7
     MAIN_BRANCH_NOT_SET = 8
 
@@ -56,20 +56,21 @@ class Cleanup:
 
     def validate_branch(self, branch):
         current = self.git.branch().strip()
+        if current != self.BRANCH_MASTER and current != self.BRANCH_DEV and current != self.BRANCH_DEVELOPMENT:
+            return self.NOT_MASTER_OR_DEV
         if current == branch:
             return self.CURRENT_BRANCH
+        if branch in self.storage.load_cleanup_whitelist():
+            return self.BRANCH_IGNORED
 
 
     def cleanup(self, branch):
         current = self.git.branch()
         if current == branch:
             return self.CURRENT_BRANCH
-        if current != self.BRANCH_MASTER and current != self.BRANCH_DEV and current != self.BRANCH_DEVELOPMENT:
-            return self.NOT_MASTER_OR_DEV
         if self.tasks.get_tasks(branch):
             return self.HAS_OPEN_TASKS
-        if branch in self.storage.load_cleanup_whitelist():
-            return self.BRANCH_WHITELISTED
+
         result = self.git.delete_branch(branch)
 
         if result == GitHelper.NOT_MERGED:
