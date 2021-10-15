@@ -18,14 +18,15 @@ class CleanupCli:
         cleanup_parser = subparsers.add_parser('cleanup', help="Clean up when done working with a branch")
         cleanup_parser.add_argument("branch", nargs="?", type=str, default=None,
                                     help="Check open tasks, remove done tasks for branch, delete branch. "
-                                         "Run from master or development branch")
-        cleanup_parser.add_argument("--addw", type=str,
-                                    help="White list a branch so that it's not cleaned up")
+                                         "Required to run from the main branch in order to detect unmerged changes. "
+                                         "Unmerged branches (relative to main) will not be deleted." )
+        cleanup_parser.add_argument("--addi", type=str,
+                                    help="Ignore list a branch so that it's not cleaned up")
         cleanup_parser.add_argument("--removew", type=str,
-                                    help="Remove a branch from white list")
+                                    help="Remove a branch from ignore list")
         cleanup_parser.add_argument("--iterate", action="store_true",
                                     help="Iterates over all local branches and offers to clean up if not white listed")
-        cleanup_parser.add_argument("-w", "--whitelist", action="store_true", help="Print white list")
+        cleanup_parser.add_argument("-i", "--ignorelist", action="store_true", help="Print ignored branch list")
         cleanup_parser.add_argument("-m", "--main", action="store_true", help="Print main branch")
         cleanup_parser.add_argument("--setmain", action="store_true", help="Set the main branch")
         
@@ -134,5 +135,3 @@ class CleanupCli:
             print("Summary")
             print("Removed: ", cleaned)
             print("Skipped: ", skipped)
-
-        
