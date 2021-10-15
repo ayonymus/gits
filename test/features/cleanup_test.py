@@ -22,7 +22,7 @@ class TestCleanup(TestCase):
     def test_cleanup_should_return_not_master(self):
         self.git.branch.return_value = BRANCH
 
-        result = self.cleanup.cleanup(BRANCH)
+        result = self.cleanup.validate_branch(BRANCH)
 
         self.assertEqual(Cleanup.NOT_MASTER_OR_DEV, result)
 
@@ -30,7 +30,7 @@ class TestCleanup(TestCase):
         self.git.branch.return_value = Cleanup.BRANCH_MASTER
         self.tasks.get_tasks.return_value = ["hupppp"]
 
-        result = self.cleanup.cleanup(BRANCH)
+        result = self.cleanup.validate_branch(BRANCH)
 
         self.assertEqual(Cleanup.HAS_OPEN_TASKS, result)
 
@@ -96,10 +96,10 @@ class TestCleanup(TestCase):
 
         self.storage.store_cleanup_whitelist.assert_called_with([])
 
-    def test_cleanup_should_return_whitelisted(self):
+    def test_cleanup_should_return_barnch_ignored(self):
         self.git.branch.return_value = Cleanup.BRANCH_MASTER
         self.storage.load_cleanup_whitelist.return_value = [BRANCH]
 
-        result = self.cleanup.cleanup(BRANCH)
+        result = self.cleanup.validate_branch(BRANCH)
 
-        self.assertEqual(Cleanup.BRANCH_WHITELISTED, result)
+        self.assertEqual(Cleanup.BRANCH_IGNORED, result)

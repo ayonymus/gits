@@ -62,17 +62,11 @@ class Cleanup:
             return self.CURRENT_BRANCH
         if branch in self.storage.load_cleanup_whitelist():
             return self.BRANCH_IGNORED
-
-
-    def cleanup(self, branch):
-        current = self.git.branch()
-        if current == branch:
-            return self.CURRENT_BRANCH
         if self.tasks.get_tasks(branch):
             return self.HAS_OPEN_TASKS
 
+    def cleanup(self, branch):
         result = self.git.delete_branch(branch)
-
         if result == GitHelper.NOT_MERGED:
             return self.NOT_MERGED
         if result == GitHelper.NOT_FOUND:

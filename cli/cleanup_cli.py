@@ -48,8 +48,9 @@ class CleanupCli:
         if validatation != OK: return validatation
         
         confirmation = confirm("This will delete '%s' branch and notes marked as 'done'. Are you sure?" % branch, iterate)
-        if confirmation != YES:
-            return confirmation
+        if confirmation == CANCEL:
+            print('Cleanup cancelled')
+            return BREAK
             
         result = self.branch_cleanup.cleanup(branch)
         if Cleanup.SUCCESS == result:
@@ -57,8 +58,6 @@ class CleanupCli:
             return DONE
         if Cleanup.ERROR == result:
             print("Something went wrong, branch could not be deleted")
-        if Cleanup.HAS_OPEN_TASKS == result:
-            print("There are still open tasks. Please review")
         if Cleanup.NOT_EXIST == result:
             print("Branch does not exist")
         if Cleanup.NOT_MERGED == result:
@@ -74,6 +73,9 @@ class CleanupCli:
             return SKIP
         elif validate == Cleanup.BRANCH_IGNORED:
             print("Skipping branch on ignore list ('%s')" % branch)
+            return SKIP
+        elif validate == Cleanup.HAS_OPEN_TASKS:
+            print("Skippin branch: there are still open tasks. ('%s')" % branch)
             return SKIP
         else: 
             return OK
@@ -98,17 +100,8 @@ class CleanupCli:
     def iterative_cleanup(self):
         cleaned = []
         for branch in self.git.branches():
-            # validate = self.branch_cleanup.validate_branch(branch.name)
-            # if validate == Cleanup.CURRENT_BRANCH:
-            #     print("Skipping current branch ('%s')\n" % branch)
-            # elif validate == Cleanup.BRANCH_IGNORED:
-            #     print("Skipping branch on ignore list ('%s')\n" % branch)
-            # else:
             result = self.cleanup(branch, True)
             if result is BREAK :
-                break
-            elif result is CANCEL:
-                print('Cleanup cancelled')
                 break
             elif result is DONE:
                 cleaned.append(branch.name)
