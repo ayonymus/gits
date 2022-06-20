@@ -11,8 +11,8 @@ SKIP = 1
 BREAK = 2
 DONE = 10
 
-G = 'green'
-R = 'red'
+G = "green"
+R = "red"
 Y = "yellow"
 
 class CleanupCli:
@@ -62,13 +62,13 @@ class CleanupCli:
         validatation = self.__validate_branch__(branch) 
         if validatation != OK: return validatation
         
-        print("This will delete the branch '", colored(branch, Y), "' and mark existing tasks as 'done'.")
+        print("\nThis will delete the branch '", colored(branch, Y), "' and remove tasks.")
         confirmation = confirm("Are you sure?", iterate)
         if confirmation == CANCEL:
             print(colored('Cleanup cancelled', Y))
             return BREAK
         if confirmation == NO:
-            print('Skipping branch')
+            print(colored('Skipping branch', Y))
             return SKIP
 
         result = self.branch_cleanup.cleanup(branch)
@@ -76,11 +76,12 @@ class CleanupCli:
             print(colored("Branch and tasks deleted", G))
             return DONE
         if Cleanup.ERROR == result:
-            print(colored("Something went wrong, branch could not be deleted"), R)
+            print(colored("Something went wrong, branch could not be deleted", R))
         if Cleanup.NOT_EXIST == result:
-            print(colored("Branch does not exist"), R)
+            print(colored("Branch does not exist!", R))
         if Cleanup.NOT_MERGED == result:
-            print(colored("Branch is not merged!", R), self.git.branch())
+            print(colored("Commits not merged to main, branch could not be deleted", Y))
+        return SKIP
 
     def __validate_branch__(self, branch):
         validate = self.branch_cleanup.validate_branch(branch.name)
@@ -98,7 +99,7 @@ class CleanupCli:
             print("Skipping branch on ignore list ('%s')" % branch)
             return SKIP
         elif validate == Cleanup.HAS_OPEN_TASKS:
-            print("Skippin branch: there are still open tasks. ('%s')" % branch)
+            print("Skipping branch: there are still open tasks. ('%s')" % branch)
             return SKIP
         else: 
             return OK
