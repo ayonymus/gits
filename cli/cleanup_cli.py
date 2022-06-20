@@ -22,10 +22,10 @@ class CleanupCli:
                                          "Unmerged branches (relative to main) will not be deleted." )
         cleanup_parser.add_argument("--addi", type=str,
                                     help="Ignore list a branch so that it's not cleaned up")
-        cleanup_parser.add_argument("--removew", type=str,
+        cleanup_parser.add_argument("--removei", type=str,
                                     help="Remove a branch from ignore list")
         cleanup_parser.add_argument("--iterate", action="store_true",
-                                    help="Iterates over all local branches and offers to clean up if not white listed")
+                                    help="Iterates over all local branches and offers to clean up if not ignore listed")
         cleanup_parser.add_argument("-i", "--ignorelist", action="store_true", help="Print ignored branch list")
         cleanup_parser.add_argument("-m", "--main", action="store_true", help="Print main branch")
         cleanup_parser.add_argument("--setmain", action="store_true", help="Set the main branch")
@@ -34,12 +34,12 @@ class CleanupCli:
         cleanup_parser.set_defaults(func=self.handle_cleanup)
 
     def handle_cleanup(self, args):
-        if args.addw:
-            self.cleanup_add_whitelist(args.addw)
-        elif args.removew:
-            self.cleanup_remove_from_whitelist(args.removew)
-        elif args.whitelist:
-            self.cleanup_print_whitelist()
+        if args.addi:
+            self.cleanup_add_ignorelist(args.addi)
+        elif args.removei:
+            self.cleanup_remove_from_ignorelist(args.removei)
+        elif args.ignorelist:
+            self.cleanup_print_ignorelist()
         elif args.iterate:
             self.iterative_cleanup()
         elif args.branch is not None:
@@ -101,22 +101,21 @@ class CleanupCli:
             print("No such branch in repository!")
             exit(1)
 
+    def cleanup_add_ignorelist(self, branch):
+        self.branch_cleanup.add_to_ignorelist(branch)
+        print("'%s' added to ignore list" % branch)
 
-    def cleanup_add_whitelist(self, branch):
-        self.branch_cleanup.add_to_whitelist(branch)
-        print("'%s' added to white list" % branch)
-
-    def cleanup_remove_from_whitelist(self, branch):
-        result = self.branch_cleanup.remove_from_whitelist(branch)
+    def cleanup_remove_from_ignorelist(self, branch):
+        result = self.branch_cleanup.remove_from_ignorelist(branch)
         if result:
-            print("'%s' removed from white list" % branch)
+            print("'%s' removed from ignore list" % branch)
         else:
-            print("'%s' not found in white list" % branch)
+            print("'%s' not found in ignore list" % branch)
 
-    def cleanup_print_whitelist(self):
-        whitelist = self.branch_cleanup.get_whitelist()
-        print("White listed branches:")
-        for branch in whitelist:
+    def cleanup_print_ignorelist(self):
+        ignorelist = self.branch_cleanup.get_ignorelist()
+        print("ignore listed branches:")
+        for branch in ignorelist:
             print(branch)
 
     def iterative_cleanup(self):

@@ -93,13 +93,13 @@ class Storage:
         data[KEY_CLEANUP_MAIN_BARNCHES] = main_list
         self.__store__(data)
 
-    def load_cleanup_whitelist(self):
+    def load_cleanup_ignorelist(self):
         try:
             return self.__load__()[KEY_CLEANUP_IGNORED_BRANCHES]
         except:
             return []
 
-    def store_cleanup_whitelist(self, white_list):
+    def store_cleanup_ignorelist(self, ignore_list):
         data = self.__load__()
-        data[KEY_CLEANUP_IGNORED_BRANCHES] = white_list
+        data[KEY_CLEANUP_IGNORED_BRANCHES] = ignore_list
         self.__store__(data)

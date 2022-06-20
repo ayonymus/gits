@@ -43,23 +43,23 @@ class Cleanup:
     
     def get_main_branch(self): return self.storage.load_main_branches()[0]
 
-    def add_to_whitelist(self, branch):
-        white_list = self.storage.load_cleanup_whitelist()
-        if branch not in white_list:
-            white_list.append(branch)
-            self.storage.store_cleanup_whitelist(white_list)
+    def add_to_ignorelist(self, branch):
+        ignore_list = self.storage.load_cleanup_ignorelist()
+        if branch not in ignore_list:
+            ignore_list.append(branch)
+            self.storage.store_cleanup_ignorelist(ignore_list)
 
-    def remove_from_whitelist(self, branch):
-        white_list = self.storage.load_cleanup_whitelist()
-        if branch in white_list:
-            white_list.remove(branch)
-            self.storage.store_cleanup_whitelist(white_list)
+    def remove_from_ignorelist(self, branch):
+        ignore_list = self.storage.load_cleanup_ignorelist()
+        if branch in ignore_list:
+            ignore_list.remove(branch)
+            self.storage.store_cleanup_ignorelist(ignore_list)
             return True
         else:
             return False
 
-    def get_whitelist(self):
-        return self.storage.load_cleanup_whitelist()
+    def get_ignorelist(self):
+        return self.storage.load_cleanup_ignorelist()
 
     def validate_branch(self, branch):
         current = self.git.branch().strip()
@@ -67,7 +67,7 @@ class Cleanup:
             return self.NOT_MAIN_BRANCH
         if current == branch:
             return self.CURRENT_BRANCH
-        if branch in self.storage.load_cleanup_whitelist():
+        if branch in self.storage.load_cleanup_ignorelist():
             return self.BRANCH_IGNORED
         if self.tasks.get_tasks(branch):
             return self.HAS_OPEN_TASKS
