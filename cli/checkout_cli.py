@@ -1,9 +1,12 @@
 
+from colorama import Fore, Style
+
 class CheckoutCli:
 
-    def __init__(self, git, checkout_history):
+    def __init__(self, git, checkout_history, workbranch):
         self.git = git
         self.checkoutHistory = checkout_history
+        self.workbranch = workbranch
 
     def add_subparser(self, subparsers):
         checkout_parser = subparsers.add_parser('checkout', help="Keep a history of checked out branches")
@@ -46,9 +49,18 @@ class CheckoutCli:
             print("Could not check out branch")
 
     def checkout_history(self):
-        for i, branch in enumerate(self.checkoutHistory.get_checkout_history()):
-            print(i, branch)
-        print()
+        wrk = str(self.workbranch.get_work_branch())
+        wrk_hist = self.checkoutHistory.get_checkout_history()
+        br = str(self.git.branch())
+        for i, branch in enumerate(wrk_hist):
+            color = Style.DIM
+            if str(branch) in self.workbranch.get_work_branch_history():
+                color = Fore.WHITE
+            if str(branch) == wrk:
+                color = Fore.CYAN
+            if str(branch) == br:
+                color = Fore.GREEN
+            print(color + str(i) + " " + str(branch) + Style.RESET_ALL)
 
     def checkout_from_history(self, id):
         branch = self.checkoutHistory.get_checkout_history()[id]

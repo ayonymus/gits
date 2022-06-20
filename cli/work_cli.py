@@ -33,9 +33,9 @@ class WorkCli:
             self.print_current_work_branch()
 
     def print_branches(self):
+        wrk = str(self.workbranch.get_work_branch())
+        br = str(self.git.branch())
         for i, branch in enumerate(self.git.branches()):
-            wrk = str(self.workbranch.get_work_branch())
-            br = str(self.git.branch())
             color = Style.DIM
             if str(branch) in self.workbranch.get_work_branch_history():
                 color = Fore.WHITE

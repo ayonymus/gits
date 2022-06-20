@@ -14,6 +14,9 @@ from features.workbranch import Workbranch
 from tools.githelper import GitHelper
 from tools.storage import Storage
 
+from colorama import init
+init()
+
 
 class Gits:
     """
@@ -33,7 +36,7 @@ class Gits:
         branch_cleanup = Cleanup(git, storage, workbranch, tasks)
 
         self.tasks_cli = TasksCli(git, tasks)
-        self.checkout_cli = CheckoutCli(git, checkout_history)
+        self.checkout_cli = CheckoutCli(git, checkout_history, workbranch)
         self.workbranch_cli = WorkCli(git, workbranch)
         self.cleanup_cli = CleanupCli(git, branch_cleanup)
 
