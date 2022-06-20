@@ -15,3 +15,5 @@ def confirm(question, cancelable):
         return NO
     if ans in ['cancel', 'c']:
         return CANCEL
+    else:
+        return CANCEL

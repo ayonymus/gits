@@ -1,12 +1,19 @@
 from cli.tools import confirm
 from cli.tools import CANCEL
+from cli.tools import NO
 
 from features.cleanup import Cleanup
+
+from termcolor import colored
 
 OK = 0
 SKIP = 1
 BREAK = 2
 DONE = 10
+
+G = 'green'
+R = 'red'
+Y = "yellow"
 
 class CleanupCli:
 
@@ -55,21 +62,25 @@ class CleanupCli:
         validatation = self.__validate_branch__(branch) 
         if validatation != OK: return validatation
         
-        confirmation = confirm("This will delete '%s' branch and notes marked as 'done'. Are you sure?" % branch, iterate)
+        print("This will delete the branch '", colored(branch, Y), "' and mark existing tasks as 'done'.")
+        confirmation = confirm("Are you sure?", iterate)
         if confirmation == CANCEL:
-            print('Cleanup cancelled')
+            print(colored('Cleanup cancelled', Y))
             return BREAK
-            
+        if confirmation == NO:
+            print('Skipping branch')
+            return SKIP
+
         result = self.branch_cleanup.cleanup(branch)
         if Cleanup.SUCCESS == result:
-            print("Branch and tasks deleted")
+            print(colored("Branch and tasks deleted", G))
             return DONE
         if Cleanup.ERROR == result:
-            print("Something went wrong, branch could not be deleted")
+            print(colored("Something went wrong, branch could not be deleted"), R)
         if Cleanup.NOT_EXIST == result:
-            print("Branch does not exist")
+            print(colored("Branch does not exist"), R)
         if Cleanup.NOT_MERGED == result:
-            print("Branch is not merged!", self.git.branch())
+            print(colored("Branch is not merged!", R), self.git.branch())
 
     def __validate_branch__(self, branch):
         validate = self.branch_cleanup.validate_branch(branch.name)
@@ -110,7 +121,7 @@ class CleanupCli:
         if result:
             print("'%s' removed from ignore list" % branch)
         else:
-            print("'%s' not found in ignore list" % branch)
+            print("'%s' was not found in ignore list" % branch)
 
     def cleanup_print_ignorelist(self):
         ignorelist = self.branch_cleanup.get_ignorelist()
