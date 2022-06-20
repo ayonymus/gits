@@ -2,6 +2,7 @@
 import json
 
 KEY_BRANCH = 'workbranches'
+KEY_CURRENT_WORK_BRANCH = 'workbranch_current'
 KEY_TASK = 'tasks'
 KEY_TASK_DONE = 'tasks_done'
 
@@ -47,10 +48,17 @@ class Storage:
         except:
             return {}
 
-    def update_branch_history(self, branch_list):
+    def set_work_branch(self, wrk):
         data = self.__load__()
-        data[KEY_BRANCH] = branch_list
+        data[KEY_CURRENT_WORK_BRANCH] = wrk
+        if wrk != None:
+            wrk_list = self.__get_list__(data, KEY_BRANCH)
+            wrk_list.append(wrk)
+            data[KEY_BRANCH] = wrk_list
         self.__store__(data)
+
+    def get_work_branch(self):
+        return self.__load__()[KEY_CURRENT_WORK_BRANCH]
 
     # tasks
     def load_all_tasks(self):

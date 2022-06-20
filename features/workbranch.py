@@ -9,8 +9,7 @@ class Workbranch:
         self.checkout = checkout
 
     def get_work_branch(self):
-        branches = self.storage.load_work_branches()
-        return None if len(branches) == 0 else branches[-1]
+        return self.storage.get_work_branch()
 
     def get_work_branch_history(self):
         return self.storage.load_work_branches()
@@ -19,10 +18,10 @@ class Workbranch:
         branch = self.git.branch()
         branches = self.storage.load_work_branches()
         if len(branches) == 0:
-            self.storage.update_branch_history([branch])
+            self.storage.set_work_branch(branch)
         elif branches[-1] != branch:
             branches.append(branch)
-            self.storage.update_branch_history(branches)
+            self.storage.set_work_branch(branch)
         return branch
 
     def checkout_work_branch(self, branch=None):
@@ -40,3 +39,6 @@ class Workbranch:
             self.checkout_work_branch(branch)
             return branch
         return branch
+
+    def unset_work_branch(self):
+        self.storage.set_work_branch(None)

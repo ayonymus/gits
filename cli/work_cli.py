@@ -1,6 +1,7 @@
 
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 
+WORK = Fore.CYAN + "work" + Style.RESET_ALL
 
 class WorkCli:
 
@@ -11,11 +12,12 @@ class WorkCli:
     def add_subparser(self, subparsers):
         work_parser = subparsers.add_parser('work', help="Keep track of a currently important branch")
         work_parser.add_argument("-b", action="store_true", help="List branches")
-        work_parser.add_argument("current", nargs="?", type=str, default=None, help="Show current work branch")
-        work_parser.add_argument("-s", action="store_true", help="Set current work branch")
-        work_parser.add_argument("-c", action="store_true", help="Checkout current work branch")
-        work_parser.add_argument("-ch", type=int,  help="Checkout work branch from history by id")
-        work_parser.add_argument("-H", "--history", action="store_true", help="Show work branch history")
+        work_parser.add_argument("current", nargs="?", type=str, default=None, help="Show current " + WORK + " branch")
+        work_parser.add_argument("-s", action="store_true", help="Set current branch as " + WORK + " branch")
+        work_parser.add_argument("-c", action="store_true", help="Checkout current " + WORK + " branch")
+        work_parser.add_argument("-ch", type=int,  help="Checkout " + WORK + " branch from history by id")
+        work_parser.add_argument("-H", "--history", action="store_true", help="Show " + WORK + " branch history")
+        work_parser.add_argument("--unset", action="store_true", help="Unset " + WORK + " branch")
         work_parser.set_defaults(func=self.handle_work)
 
     def handle_work(self, args):
@@ -29,6 +31,8 @@ class WorkCli:
             self.checkout_work_branch_history(args.ch)
         elif args.history:
             self.print_work_branch_history(args.history)
+        elif args.unset:
+            self.unset_work_branch()
         else:
             self.print_current_work_branch()
 
@@ -66,7 +70,7 @@ class WorkCli:
                 cur_found = True
             print(color + str(i) + " " + branch + stat + Style.RESET_ALL)
         if not cur_found:
-            print("Current branch: " + Fore.GREEN + branch + Style.RESET_ALL)
+            print("Current branch: " + Fore.GREEN + cur + Style.RESET_ALL)
 
 
     def set_work_branch(self):
@@ -80,3 +84,8 @@ class WorkCli:
     def checkout_work_branch_history(self, index):
         branch = self.workbranch.checkout_work_branch_from_history(index)
         print("No such branch" if branch is None else "Switched to branch '%s'" % branch)
+
+    def unset_work_branch(self):
+        self.workbranch.unset_work_branch()
+        print("No work branch selected")
+
