@@ -19,7 +19,7 @@ class CheckoutCli:
         checkout_parser.add_argument("-H", "--history", action="store_true", help="Check out history")
         checkout_parser.add_argument("-bh", "--branchhistory", type=int,
                                      help="Check out a branch from branch history based by id")
-        checkout_parser.add_argument("-l", "--last", action="store_true", help="Check out last branch from branch history")
+        checkout_parser.add_argument("-l", "--last", type=int, help="Check out x from last branch from history")
 
         checkout_parser.set_defaults(func=self.handle_checkout)
 
@@ -35,7 +35,7 @@ class CheckoutCli:
         elif args.branchhistory:
             self.checkout_from_history(args.branchhistory)
         elif args.last:
-            self.checkout_last()
+            self.checkout_last(args.last)
 
 
     def checkout(self, branch, new_branch=False):
@@ -70,7 +70,7 @@ class CheckoutCli:
         else:
             print("The branch does not exist any more")
 
-    def checkout_last(self):
+    def checkout_last(self, x):
         branch_list = self.checkoutHistory.get_checkout_history()
-        branch = branch_list[len(branch_list) - 1]
+        branch = branch_list[len(branch_list) - 1 - x]
         self.checkout(branch)
