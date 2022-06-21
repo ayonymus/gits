@@ -11,20 +11,17 @@ class WorkCli:
 
     def add_subparser(self, subparsers):
         work_parser = subparsers.add_parser('work', help="Keep track of a currently important branch")
-        work_parser.add_argument("-b", action="store_true", help="List branches")
         work_parser.add_argument("current", nargs="?", type=str, default=None, help="Show current " + WORK + " branch")
         work_parser.add_argument("-s", action="store_true", help="Set current branch as " + WORK + " branch")
         work_parser.add_argument("-c", action="store_true", help="Checkout current " + WORK + " branch")
         work_parser.add_argument("-ch", type=int,  help="Checkout " + WORK + " branch from history by id")
         work_parser.add_argument("-H", "--history", action="store_true", help="Show " + WORK + " branch history")
         work_parser.add_argument("--unset", action="store_true", help="Unset " + WORK + " branch")
-        work_parser.set_defaults(func=self.handle_work)
+        work_parser.set_defaults(func=self.__handle_work__)
 
-    def handle_work(self, args):
+    def __handle_work__(self, args):
         if args.s:
             self.set_work_branch()
-        elif args.b:
-            self.print_branches()
         elif args.c:
             self.checkout_work_branch()
         elif args.ch:
@@ -35,24 +32,6 @@ class WorkCli:
             self.unset_work_branch()
         else:
             self.print_current_work_branch()
-
-    def print_branches(self):
-        wrk = str(self.workbranch.get_work_branch())
-        wrk_hist = self.workbranch.get_work_branch_history()
-        checked = str(self.git.branch())
-        for i, branch in enumerate(self.git.branches()):
-            br = str(branch)
-            color = Style.DIM
-            state = ""
-            if br in wrk_hist:
-                color = Fore.WHITE
-            if br == wrk:
-                state = Fore.CYAN + " (work)"
-                color = Fore.CYAN
-            if br == checked:
-                color = Fore.GREEN
-            print(color + br + state + Style.RESET_ALL)
-
 
     def print_current_work_branch(self):
         current = self.workbranch.get_work_branch()

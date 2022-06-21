@@ -7,6 +7,7 @@ from cli.checkout_cli import CheckoutCli
 from cli.cleanup_cli import CleanupCli
 from cli.tasks_cli import TasksCli
 from cli.work_cli import WorkCli
+from cli.overview_cli import OverviewCli
 from features.checkout import CheckoutHistory
 from features.cleanup import Cleanup
 from features.taskhandler import TaskHandler
@@ -39,9 +40,12 @@ class Gits:
         self.checkout_cli = CheckoutCli(git, checkout_history, workbranch)
         self.workbranch_cli = WorkCli(git, workbranch)
         self.cleanup_cli = CleanupCli(git, branch_cleanup)
+        self.overview_cli = OverviewCli(git, workbranch)
 
     def main(self):
         parser = argparse.ArgumentParser(description='Keep track when working with multiple branches on git')
+        parser.add_argument("-b", action="store_true", help="List branches")
+
         subparsers = parser.add_subparsers()
 
         self.tasks_cli.add_subparser(subparsers)
@@ -54,8 +58,15 @@ class Gits:
         if not len(sys.argv) > 1:
             parser.print_help()
             exit(0)
+        self.__handle_args__(args)
 
-        args.func(args)
+
+    def __handle_args__(self, args):
+        if (args.b):
+            self.overview_cli.print_branches()
+        else:
+            args.func(args)
+
 
 
 if __name__ == '__main__':
