@@ -44,8 +44,13 @@ class OverviewCli:
             task_nr = len(self.tasks.get_tasks(br))
             task_done_nr = len(self.tasks.get_done_tasks(br))
             no_cleanup = br in cleanup_ignore
+            
+            pushed = self.git.has_remote(br)
+            merged = self.git.is_merged(br, main_br)
+
             color = Style.DIM
             state = ""
+
             if br in wrk_hist:
                 color = Fore.WHITE
             if br == wrk:
@@ -55,5 +60,6 @@ class OverviewCli:
                 color = Fore.GREEN
             if br == main_br:
             	state = Fore.BLUE + " (main)"
-            data.append([color + br + state + Style.RESET_ALL, task_nr, task_done_nr, no_cleanup])
-        print(tabulate(data, headers=["Branch", "Open tasks", "Done tasks", "Don't clean up"]))
+            data.append([color + br + state + Style.RESET_ALL, task_nr, task_done_nr, no_cleanup, pushed, merged])
+        print(tabulate(data, headers=["Branch", "Open tasks", "Done tasks", "Don't clean up", "Pushed", "Merged to main"]))
+

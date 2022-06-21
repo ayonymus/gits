@@ -27,6 +27,14 @@ class GitHelper:
         except git.exc.GitCommandError:
             return False
 
+    def has_remote(self, branch):
+        return "origin/" + branch in map(lambda it: str(it), self.repo.references)
+
+    def is_merged(self, branch, main):
+        commits_ahead = self.repo.iter_commits('%s..%s' % (main, branch))
+        commits_ahead_count = sum(1 for c in commits_ahead)
+        return commits_ahead_count == 0
+
     def branch(self):
         return self.repo.active_branch.name
 
