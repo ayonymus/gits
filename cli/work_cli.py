@@ -58,11 +58,11 @@ class WorkCli:
 
     def set_work_branch(self):
         branch = self.workbranch.set_work_branch()
-        print("Current work branch is %s" % branch)
+        print("Current work branch is " + Fore.CYAN + branch + Style.RESET_ALL)
 
     def checkout_work_branch(self):
         branch = self.workbranch.checkout_work_branch()
-        print("Switched to branch '%s'" % branch)
+        print("Switched to current work branch: " + Fore.CYAN + branch + Style.RESET_ALL)
 
     def checkout_work_branch_history(self, index):
         branch = self.workbranch.checkout_work_branch_from_history(index)
