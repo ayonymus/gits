@@ -40,7 +40,7 @@ class Gits:
         self.checkout_cli = CheckoutCli(git, checkout_history, workbranch)
         self.workbranch_cli = WorkCli(git, workbranch)
         self.cleanup_cli = CleanupCli(git, branch_cleanup)
-        self.overview_cli = OverviewCli(git, workbranch, tasks)
+        self.overview_cli = OverviewCli(git, workbranch, tasks, branch_cleanup)
 
     def main(self):
         parser = argparse.ArgumentParser(description='Keep track when working with multiple branches on git')

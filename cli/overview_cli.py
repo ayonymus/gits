@@ -6,10 +6,11 @@ class OverviewCli:
     Functions that use separate modules
     """
 
-    def __init__(self, git, workbranch, tasks):
+    def __init__(self, git, workbranch, tasks, branch_cleanup):
         self.workbranch = workbranch
         self.git = git
         self.tasks = tasks
+        self.cleanup = branch_cleanup
     
     def print_branches(self):
         wrk = str(self.workbranch.get_work_branch())
@@ -33,6 +34,8 @@ class OverviewCli:
         wrk = str(self.workbranch.get_work_branch())
         wrk_hist = self.workbranch.get_work_branch_history()
         checked = str(self.git.branch())
+        cleanup_ignore = self.cleanup.get_ignorelist()
+        main_br = self.cleanup.get_main_branch()
 
         data = []
 
@@ -40,6 +43,7 @@ class OverviewCli:
             br = str(branch)
             task_nr = len(self.tasks.get_tasks(br))
             task_done_nr = len(self.tasks.get_done_tasks(br))
+            no_cleanup = br in cleanup_ignore
             color = Style.DIM
             state = ""
             if br in wrk_hist:
@@ -49,5 +53,7 @@ class OverviewCli:
                 color = Fore.CYAN
             if br == checked:
                 color = Fore.GREEN
-            data.append([color + br + state + Style.RESET_ALL, task_nr, task_done_nr])
-        print(tabulate(data, headers=["Branch", "Open tasks", "Done tasks"]))
+            if br == main_br:
+            	state = Fore.BLUE + " (main)"
+            data.append([color + br + state + Style.RESET_ALL, task_nr, task_done_nr, no_cleanup])
+        print(tabulate(data, headers=["Branch", "Open tasks", "Done tasks", "Don't clean up"]))
