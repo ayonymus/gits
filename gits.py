@@ -40,11 +40,12 @@ class Gits:
         self.checkout_cli = CheckoutCli(git, checkout_history, workbranch)
         self.workbranch_cli = WorkCli(git, workbranch)
         self.cleanup_cli = CleanupCli(git, branch_cleanup)
-        self.overview_cli = OverviewCli(git, workbranch)
+        self.overview_cli = OverviewCli(git, workbranch, tasks)
 
     def main(self):
         parser = argparse.ArgumentParser(description='Keep track when working with multiple branches on git')
         parser.add_argument("-b", action="store_true", help="List branches")
+        parser.add_argument("-o", action="store_true", help="List branches with additional data")
 
         subparsers = parser.add_subparsers()
 
@@ -64,6 +65,8 @@ class Gits:
     def __handle_args__(self, args):
         if (args.b):
             self.overview_cli.print_branches()
+        if (args.o):
+            self.overview_cli.print_overview()
         else:
             args.func(args)
 
