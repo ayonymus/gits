@@ -38,16 +38,20 @@ class WorkCli:
 
     def print_branches(self):
         wrk = str(self.workbranch.get_work_branch())
-        br = str(self.git.branch())
+        wrk_hist = self.workbranch.get_work_branch_history()
+        checked = str(self.git.branch())
         for i, branch in enumerate(self.git.branches()):
+            br = str(branch)
             color = Style.DIM
-            if str(branch) in self.workbranch.get_work_branch_history():
+            state = ""
+            if br in wrk_hist:
                 color = Fore.WHITE
-            if str(branch) == wrk:
+            if br == wrk:
+                state = Fore.CYAN + " (work)"
                 color = Fore.CYAN
-            if str(branch) == br:
+            if br == checked:
                 color = Fore.GREEN
-            print(color + str(branch) + Style.RESET_ALL)
+            print(color + br + state + Style.RESET_ALL)
 
 
     def print_current_work_branch(self):
@@ -59,16 +63,16 @@ class WorkCli:
         cur = self.git.branch()
         cur_found = False
         for i, branch in enumerate(self.workbranch.get_work_branch_history()):
-            stat = ""
+            state = ""
             color = Fore.WHITE
             if branch == self.workbranch.get_work_branch():
-                stat += Fore.CYAN + " (work)"
+                state += Fore.CYAN + " (work)"
                 color = Fore.CYAN
             if branch == cur:
-                stat += Fore.GREEN + " (checked out)"
+                state += Fore.GREEN + " (checked out)"
                 color = Fore.GREEN
                 cur_found = True
-            print(color + str(i) + " " + branch + stat + Style.RESET_ALL)
+            print(color + str(i) + " " + branch + state + Style.RESET_ALL)
         if not cur_found:
             print("Current branch: " + Fore.GREEN + cur + Style.RESET_ALL)
 
