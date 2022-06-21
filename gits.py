@@ -37,7 +37,7 @@ class Gits:
         branch_cleanup = Cleanup(git, storage, workbranch, tasks)
 
         self.tasks_cli = TasksCli(git, tasks)
-        self.checkout_cli = CheckoutCli(git, checkout_history, workbranch)
+        self.checkout_cli = CheckoutCli(git, checkout_history, workbranch, branch_cleanup)
         self.workbranch_cli = WorkCli(git, workbranch)
         self.cleanup_cli = CleanupCli(git, branch_cleanup)
         self.overview_cli = OverviewCli(git, workbranch, tasks, branch_cleanup)

@@ -3,10 +3,11 @@ from colorama import Fore, Style
 
 class CheckoutCli:
 
-    def __init__(self, git, checkout_history, workbranch):
+    def __init__(self, git, checkout_history, workbranch, cleanup):
         self.git = git
         self.checkoutHistory = checkout_history
         self.workbranch = workbranch
+        self.cleanup = cleanup
 
     def add_subparser(self, subparsers):
         checkout_parser = subparsers.add_parser('checkout', help="Keep a history of checked out branches")
@@ -20,6 +21,7 @@ class CheckoutCli:
         checkout_parser.add_argument("-bh", "--branchhistory", type=int,
                                      help="Check out a branch from branch history based by id")
         checkout_parser.add_argument("-l", "--last", type=int, help="Check out x from last branch from history")
+        checkout_parser.add_argument("-m", "--main", action="store_true", help="Check main branch")
 
         checkout_parser.set_defaults(func=self.handle_checkout)
 
@@ -36,6 +38,8 @@ class CheckoutCli:
             self.checkout_from_history(args.branchhistory)
         elif args.last:
             self.checkout_last(args.last)
+        elif args.main:
+            self.checkout_main()
 
 
     def checkout(self, branch, new_branch=False):
@@ -74,3 +78,7 @@ class CheckoutCli:
         branch_list = self.checkoutHistory.get_checkout_history()
         branch = branch_list[len(branch_list) - 1 - x]
         self.checkout(branch)
+
+    def checkout_main(self):
+        main = str(self.cleanup.get_main_branch())
+        self.checkout(main)
