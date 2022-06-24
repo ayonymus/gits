@@ -7,9 +7,10 @@ UP="\u25b2"
 LEFT="\u25c0"
 DOWN="\u25bc"
 
+UPSTREAM = UP
 PUSHED = Fore.GREEN + UP + Fore.RESET
 MERGED = LEFT
-NOT_PUSHED = Fore.RED + UP + Fore.RESET
+NO_UPSTREAM = Fore.RED + UP + Fore.RESET
 
 class OverviewCli:    
     """
@@ -67,10 +68,10 @@ class OverviewCli:
         	Fore.BLUE + "Main" + Fore.RESET, 
         	Fore.CYAN + "Work" + Fore.RESET, 
         	Style.DIM + "Not work branch" + Style.RESET_ALL,
-        	"\x1B[4m" + "Don't clean up" + "\x1B[0m")
+        	"\x1B[4m" + "Ignore cleanup" + "\x1B[0m")
         print(
         	PUSHED + " Pushed", 
-        	NOT_PUSHED + " Not pushed", 
+        	NO_UPSTREAM + " No upstream", 
         	MERGED + " Merged to main")
 
     def __tasks__(self, br):
@@ -103,16 +104,16 @@ class OverviewCli:
 
 
     def __upstream_status__(self, branch, main_br):
-        pushed = self.git.has_remote(branch)
+        upstream = self.git.has_remote(branch)
         merged = self.git.is_merged(branch, main_br)
 
         state = ""
-        if pushed:
-            state = PUSHED
+        if upstream:
+            state = UPSTREAM
         elif merged:
         	state = LEFT
         else:
-            state = NOT_PUSHED
+            state = NO_UPSTREAM
         return state
 
 
