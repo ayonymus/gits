@@ -59,7 +59,11 @@ class OverviewCli:
             if br == checked:
                 color = Fore.GREEN
             if br == main_br:
-            	state = Fore.BLUE + " (main)"
+                state = Fore.BLUE + " (main)"
+                if br == checked:
+                    color = Fore.GREEN
+                else:
+                    color = Fore.BLUE
             data.append([color + br + state + Style.RESET_ALL, task_nr, task_done_nr, no_cleanup, pushed, merged])
         print(tabulate(data, headers=["Branch", "Open tasks", "Done tasks", "Don't clean up", "Pushed", "Merged to main"]))
 

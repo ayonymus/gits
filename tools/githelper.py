@@ -31,9 +31,8 @@ class GitHelper:
         return "origin/" + branch in map(lambda it: str(it), self.repo.references)
 
     def is_merged(self, branch, main):
-        commits_ahead = self.repo.iter_commits('%s..%s' % (main, branch))
-        commits_ahead_count = sum(1 for c in commits_ahead)
-        return commits_ahead_count == 0
+        merged = self.repo.git.branch('--merged', main)
+        return branch in merged
 
     def branch(self):
         return self.repo.active_branch.name
@@ -55,9 +54,12 @@ class GitHelper:
     def work_dir(self):
         return self.repo.working_dir
 
-    def delete_branch(self, branch):
+    def delete_branch(self, branch, hard=False):
         try:
-            self.repo.git.branch('-d', branch)
+            if hard:
+                self.repo.git.branch('-D', branch)
+            else:
+                self.repo.git.branch('-d', branch)
             return self.SUCCESS
         except git.exc.GitCommandError as e:
             if 'not found.' in e.stderr:

@@ -1,6 +1,7 @@
 from cli.tools import confirm
 from cli.tools import CANCEL
 from cli.tools import NO
+from cli.tools import YES
 
 from features.cleanup import Cleanup
 
@@ -33,11 +34,11 @@ class CleanupCli:
                                     help="Remove a branch from ignore list")
         cleanup_parser.add_argument("--iterate", action="store_true",
                                     help="Iterates over all local branches and offers to clean up if not ignore listed")
+        cleanup_parser.add_argument("-D", action="store_true",
+                                    help="Flag to prompt for unmerged branch to delete. Use with --iterate")
         cleanup_parser.add_argument("-i", "--ignorelist", action="store_true", help="Print ignored branch list")
         cleanup_parser.add_argument("-m", "--main", action="store_true", help="Print main branch")
         cleanup_parser.add_argument("--setmain", action="store_true", help="Set the main branch")
-        
-        
         cleanup_parser.set_defaults(func=self.handle_cleanup)
 
     def handle_cleanup(self, args):
@@ -48,7 +49,7 @@ class CleanupCli:
         elif args.ignorelist:
             self.cleanup_print_ignorelist()
         elif args.iterate:
-            self.iterative_cleanup()
+            self.iterative_cleanup(args.D)
         elif args.branch is not None:
             self.cleanup(args.branch, False)
         elif args.main:
@@ -58,7 +59,7 @@ class CleanupCli:
         elif args.branch is None:
             print("Please define a branch to clean up")
 
-    def cleanup(self, branch, iterate):
+    def cleanup(self, branch, iterate, hard_enabled):
         validatation = self.__validate_branch__(branch) 
         if validatation != OK: return validatation
         
@@ -80,7 +81,13 @@ class CleanupCli:
         if Cleanup.NOT_EXIST == result:
             print(colored("Branch does not exist!", R))
         if Cleanup.NOT_MERGED == result:
-            print(colored("Commits not merged to main, branch could not be deleted", Y))
+            print(colored("Commits not merged to main, branch could not be deleted.", Y))
+            if hard_enabled:
+                confirmation = confirm("Delete anyways? " + colored("Caution: May lead to data loss!", R), False)
+                if (confirmation == YES):
+                    retry = self.branch_cleanup.cleanup(branch, True)
+                    if Cleanup.SUCCESS == retry:
+                        return DONE
         return SKIP
 
     def __validate_branch__(self, branch):
@@ -130,11 +137,11 @@ class CleanupCli:
         for branch in ignorelist:
             print(branch)
 
-    def iterative_cleanup(self):
+    def iterative_cleanup(self, hard):
         cleaned = []
         skipped = []
         for branch in self.git.branches():
-            result = self.cleanup(branch, True)
+            result = self.cleanup(branch, True, hard)
             if result is BREAK:
                 break
             elif result is SKIP:
