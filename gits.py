@@ -65,7 +65,7 @@ class Gits:
     def __handle_args__(self, args):
         if (args.b):
             self.overview_cli.print_branches()
-        if (args.o):
+        elif (args.o):
             self.overview_cli.print_overview()
         else:
             args.func(args)
