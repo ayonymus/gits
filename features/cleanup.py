@@ -25,6 +25,7 @@ class Cleanup:
     BRANCH_IGNORED = 6
     CURRENT_BRANCH = 7
     MAIN_BRANCH_NOT_SET = 8
+    OK_TO_DELETE = 9
 
     def __init__(self, git, storage, workbranch, tasks):
         self.git = git
@@ -71,6 +72,7 @@ class Cleanup:
             return self.BRANCH_IGNORED
         if self.tasks.get_tasks(branch):
             return self.HAS_OPEN_TASKS
+        return self.OK_TO_DELETE
 
     def cleanup(self, branch, hard=False):
         result = self.git.delete_branch(branch, hard)

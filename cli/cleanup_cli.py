@@ -35,7 +35,7 @@ class CleanupCli:
         cleanup_parser.add_argument("--iterate", action="store_true",
                                     help="Iterates over all local branches and offers to clean up if not ignore listed")
         cleanup_parser.add_argument("-D", action="store_true",
-                                    help="Flag to prompt for unmerged branch to delete. Use with --iterate")
+                                    help="Flag to prompt for unmerged branch to delete")
         cleanup_parser.add_argument("-i", "--ignorelist", action="store_true", help="Print ignored branch list")
         cleanup_parser.add_argument("-m", "--main", action="store_true", help="Print main branch")
         cleanup_parser.add_argument("--setmain", action="store_true", help="Set the main branch")
@@ -51,7 +51,7 @@ class CleanupCli:
         elif args.iterate:
             self.iterative_cleanup(args.D)
         elif args.branch is not None:
-            self.cleanup(args.branch, False)
+            self.cleanup(args.branch, False, args.D)
         elif args.main:
             print("Main branch is %s" % self.branch_cleanup.get_main_branch())
         elif args.setmain:
@@ -91,7 +91,7 @@ class CleanupCli:
         return SKIP
 
     def __validate_branch__(self, branch):
-        validate = self.branch_cleanup.validate_branch(branch.name)
+        validate = self.branch_cleanup.validate_branch(branch)
         if validate == Cleanup.MAIN_BRANCH_NOT_SET:
             print("You must set up a main branch before doing a cleanup.")
             self.set_main_branch()            
@@ -108,8 +108,11 @@ class CleanupCli:
         elif validate == Cleanup.HAS_OPEN_TASKS:
             print("Skipping branch: there are still open tasks. ('%s')" % branch)
             return SKIP
-        else: 
+        elif validate == Cleanup.OK_TO_DELETE:
             return OK
+        else:
+            print("Validation went wrong. ('%s')" % branch)
+            return SKIP
 
     def set_main_branch(self):
         ans = input("Please enter main branch name: ").lower()
@@ -141,7 +144,7 @@ class CleanupCli:
         cleaned = []
         skipped = []
         for branch in self.git.branches():
-            result = self.cleanup(branch, True, hard)
+            result = self.cleanup(branch.name, True, hard)
             if result is BREAK:
                 break
             elif result is SKIP:

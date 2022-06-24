@@ -68,7 +68,10 @@ class OverviewCli:
         	Fore.CYAN + "Work" + Fore.RESET, 
         	Style.DIM + "Not work branch" + Style.RESET_ALL,
         	"\x1B[4m" + "Don't clean up" + "\x1B[0m")
-        print("Pushed: ", PUSHED, "Not pushed: ", NOT_PUSHED, "Merged to main: " + MERGED)
+        print(
+        	PUSHED + " Pushed", 
+        	NOT_PUSHED + " Not pushed", 
+        	MERGED + " Merged to main")
 
     def __tasks__(self, br):
         task_open_nr = len(self.tasks.get_tasks(br))
