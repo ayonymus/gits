@@ -70,3 +70,16 @@ class GitHelper:
                 print(e.stderr)
             return self.ERROR
 
+    def fetch(self):
+        for remote in self.repo.remotes:
+            remote.fetch()
+
+    def compare_hash(self, branch):
+        if not self.has_remote(branch):
+            return False
+        remoteSha = git.Git().execute("git rev-parse origin/" + branch, shell=True, with_stdout=True)
+        localSha = git.Git().execute("git rev-parse " + branch, shell=True, with_stdout=True)
+        return remoteSha == localSha
+
+
+

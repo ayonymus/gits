@@ -42,6 +42,9 @@ class OverviewCli:
 
 
     def print_overview(self):
+        print("Fetch...")
+        self.git.fetch()
+
         wrk = str(self.workbranch.get_work_branch())
         wrk_hist = self.workbranch.get_work_branch_history()
         checked = str(self.git.branch())
@@ -51,11 +54,13 @@ class OverviewCli:
         data =[]
         for i, branch in enumerate(self.git.branches()):
             br = str(branch)
+            pushed = self.git.compare_hash(br)
+
             task_nr = len(self.tasks.get_tasks(br))
             task_done_nr = len(self.tasks.get_done_tasks(br))
             no_cleanup = br in cleanup_ignore
 
-            state = self.__upstream_status__(br, main_br)
+            state = self.__upstream_status__(br, pushed, main_br)
             br_ = self.__wrk_status__(br, main_br, checked, wrk, wrk_hist, no_cleanup)
             tasks = self.__tasks__(br)
 
@@ -70,8 +75,9 @@ class OverviewCli:
         	Style.DIM + "Not work branch" + Style.RESET_ALL,
         	"\x1B[4m" + "Ignore cleanup" + "\x1B[0m")
         print(
-        	PUSHED + " Pushed", 
-        	NO_UPSTREAM + " No upstream", 
+        	PUSHED + " Pushed",
+        	UPSTREAM + " Has remote br", 
+        	NO_UPSTREAM + " No remote br", 
         	MERGED + " Merged to main")
 
     def __tasks__(self, br):
@@ -103,15 +109,17 @@ class OverviewCli:
         return color + br + Style.RESET_ALL
 
 
-    def __upstream_status__(self, branch, main_br):
+    def __upstream_status__(self, branch, pushed, main_br):
         upstream = self.git.has_remote(branch)
         merged = self.git.is_merged(branch, main_br)
 
         state = ""
-        if upstream:
+        if pushed:
+        	state = PUSHED
+        elif upstream:
             state = UPSTREAM
         elif merged:
-        	state = LEFT
+            state = LEFT
         else:
             state = NO_UPSTREAM
         return state
