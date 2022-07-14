@@ -60,6 +60,7 @@ class CheckoutCli:
             print("Current branch is \n %s" % branch)
         else:
             print("Could not check out branch")
+        return result
 
     def checkout_activity(self, length):
         wrk = str(self.workbranch.get_work_branch())

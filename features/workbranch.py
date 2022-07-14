@@ -30,17 +30,17 @@ class WorkBranch:
         if branch is None:
             branch = self.get_work_branch()
         if branch is not None:
-            self.checkout.checkout(branch)
-        return branch
+            result = self.checkout.checkout(branch)
+            return branch, result
+        return branch, False
 
     def checkout_work_branch_from_history(self, index):
         branches = self.get_work_branch_history()
         branch = None
         if len(branches) > 0 and len(branches) > index:
             branch = branches[index]
-            self.checkout_work_branch(branch)
-            return branch
-        return branch
+            return self.checkout_work_branch(branch)
+        return branch, False
 
     def unset_work_branch(self):
         self.storage.set_work_branch(None)

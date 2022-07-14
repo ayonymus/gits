@@ -66,12 +66,20 @@ class WorkCli:
         print("Current work branch is " + Fore.CYAN + branch + Style.RESET_ALL)
 
     def checkout_work_branch(self):
-        branch = self.workbranch.checkout_work_branch()
-        print("Switched to current work branch: " + Fore.CYAN + branch + Style.RESET_ALL)
+        branch, result = self.workbranch.checkout_work_branch()
+        if result:
+            print("Switched to current work branch: " + Fore.CYAN + branch + Style.RESET_ALL)
+        else:
+            print("Couldn't switch to work branch: " + Fore.CYAN + branch + Style.RESET_ALL)
 
     def checkout_work_branch_history(self, index):
-        branch = self.workbranch.checkout_work_branch_from_history(index)
-        print("No such branch" if branch is None else "Switched to branch '%s'" % branch)
+        branch, result = self.workbranch.checkout_work_branch_from_history(index)
+        if result:
+            print("Switched to current work branch: " + Fore.CYAN + branch + Style.RESET_ALL)
+        elif branch is None:
+            print("No such branch")
+        else:
+            print("Couldn't switch to work branch: " + Fore.CYAN + branch + Style.RESET_ALL)
 
     def unset_work_branch(self):
         self.workbranch.unset_work_branch()
