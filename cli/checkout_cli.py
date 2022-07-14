@@ -1,6 +1,9 @@
 
 from colorama import Fore, Style
 
+from cli.tools import dedup
+
+
 class CheckoutCli:
 
     def __init__(self, git, checkout_history, workbranch, cleanup):
@@ -22,7 +25,7 @@ class CheckoutCli:
                                      help="Create and check out branch with current's name plus a suffix")
         checkout_parser.add_argument("-H", "--history", type=int,
                                      help="Check out a branch from branch history based on id")
-        checkout_parser.add_argument("-f", "--full", action="store_true", help="Full branch checkout history with duplicates. Combine with -a and -bh")
+        checkout_parser.add_argument("-f", "--full", action="store_true", help="Full branch checkout history with duplicates. Combine with -a and -H")
         checkout_parser.add_argument("-m", "--main", action="store_true", help="Check out main branch")
         checkout_parser.add_argument("-w", "--work", action="store_true", help="Check out work branch")
 
@@ -49,9 +52,6 @@ class CheckoutCli:
             print(args.example)
 
     def checkout(self, branch, new_branch=False):
-        if branch == '.':
-            self.git.checkout('.')
-            return
         if not new_branch and branch not in self.git.branches():
             self.git.checkout(branch)
             return
@@ -66,7 +66,7 @@ class CheckoutCli:
         history = self.checkoutHistory.get_checkout_history()
         history.reverse()
         if not self.full:
-            history = self.dedup(history)
+            history = dedup(history)
         if length != 0:
             history = history[:length]
         current_br = str(self.git.branch())
@@ -86,18 +86,13 @@ class CheckoutCli:
                 color = Fore.LIGHTRED_EX + Style.DIM
             print(color + str(i) + " " + str(branch) + Style.RESET_ALL)
 
-    def dedup(self, my_list):
-        seen = {}
-        new_list = [seen.setdefault(x, x) for x in my_list if x not in seen]
-        return new_list
-
-    def checkout_from_history(self, id):
+    def checkout_from_history(self, idx):
         history = self.checkoutHistory.get_checkout_history()
         history.reverse()
         if not self.full:
-            history = self.dedup(history)
+            history = dedup(history)
 
-        branch = history[id]
+        branch = history[idx]
 
         if self.git.is_existing_branch(branch):
             self.checkout(branch)
@@ -112,6 +107,7 @@ class CheckoutCli:
             self.checkout(main)
 
     def checkout_work(self):
+        wrk = str(self.workbranch.get_work_branch())
         if wrk == 'None':
             print("You have to set a work branch first!")
         else:

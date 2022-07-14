@@ -14,7 +14,7 @@ class TasksCli:
         task_parser.add_argument("--donelist", action="store_true", help="Show done items")
         task_parser.add_argument("-r", "--remove", type=int, help="Remove task by id")
         task_parser.add_argument("-m", nargs=2, type=int, help="Move task in list")
-        task_parser.add_argument("--movetop", type=int, help="Move task to top in list")
+        task_parser.add_argument("--movetop", type=int, help="Move task to top of list")
         task_parser.add_argument("--assign", nargs=2, type=str,
                                  help="Assign a task to arbitrary branch. [0] branch name, [1] task")
         task_parser.set_defaults(func=self.handle_task)

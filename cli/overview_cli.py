@@ -1,18 +1,18 @@
 from colorama import Fore, Style
 from tabulate import tabulate
 
-
-RIGHT="\u25b6"
-UP="\u25b2"
-LEFT="\u25c0"
-DOWN="\u25bc"
+RIGHT = "\u25b6"
+UP = "\u25b2"
+LEFT = "\u25c0"
+DOWN = "\u25bc"
 
 UPSTREAM = UP
 PUSHED = Fore.GREEN + UP + Fore.RESET
 MERGED = LEFT
 NO_UPSTREAM = Fore.RED + UP + Fore.RESET
 
-class OverviewCli:    
+
+class OverviewCli:
     """
     Functions that use separate modules
     """
@@ -22,7 +22,7 @@ class OverviewCli:
         self.git = git
         self.tasks = tasks
         self.cleanup = branch_cleanup
-    
+
     def print_branches(self):
         wrk = str(self.workbranch.get_work_branch())
         wrk_hist = self.workbranch.get_work_branch_history()
@@ -40,7 +40,6 @@ class OverviewCli:
                 color = Fore.GREEN
             print(color + br + state + Style.RESET_ALL)
 
-
     def print_overview(self, fetch):
         if (fetch):
             print("Fetch...")
@@ -52,7 +51,7 @@ class OverviewCli:
         cleanup_ignore = self.cleanup.get_ignorelist()
         main_br = self.cleanup.get_main_branch()
 
-        data =[]
+        data = []
         for i, branch in enumerate(self.git.branches()):
             br = str(branch)
             pushed = self.git.compare_hash(br)
@@ -70,15 +69,15 @@ class OverviewCli:
         print(tabulate(data, headers=["Branch", "State", "Tasks"]))
         print()
         print(
-            Fore.GREEN + "Current" + Fore.RESET, 
-            Fore.BLUE + "Main" + Fore.RESET, 
-            Fore.CYAN + "Work" + Fore.RESET, 
+            Fore.GREEN + "Current" + Fore.RESET,
+            Fore.BLUE + "Main" + Fore.RESET,
+            Fore.CYAN + "Work" + Fore.RESET,
             Style.DIM + "Not work branch" + Style.RESET_ALL,
             "\x1B[4m" + "Ignore cleanup" + "\x1B[0m")
         print(
             PUSHED + " Sync w/ origin",
-            UPSTREAM + " Has remote br", 
-            NO_UPSTREAM + " No remote br", 
+            UPSTREAM + " Has remote br",
+            NO_UPSTREAM + " No remote br",
             MERGED + " Merged to main")
 
     def __tasks__(self, br):
@@ -97,21 +96,20 @@ class OverviewCli:
         style = Style.NORMAL
 
         if br == wrk:
-             color = Fore.CYAN
+            color = Fore.CYAN
         elif br == checked:
-             color = Fore.GREEN
+            color = Fore.GREEN
         elif br == main_br:
-             if br == checked:
-                 color = Fore.GREEN
-             else:
-                 color = Fore.BLUE
+            if br == checked:
+                color = Fore.GREEN
+            else:
+                color = Fore.BLUE
         elif br not in wrk_hist:
             style = Style.DIM
         if no_cleanup:
             br = "\x1B[4m" + br + "\x1B[0m"
 
-        return style + color + br + Style.RESET_ALL 
-
+        return style + color + br + Style.RESET_ALL
 
     def __upstream_status__(self, branch, pushed, main_br):
         upstream = self.git.has_remote(branch)

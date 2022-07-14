@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock
 
-from features.workbranch import Workbranch
+from features.workbranch import WorkBranch
 
 ONE = 'one'
 TWO = 'two'
@@ -14,7 +14,7 @@ class TestWorkBranchMethods(unittest.TestCase):
         self.storage = Mock()
         self.git = Mock()
         self.checkout = Mock()
-        self.wb = Workbranch(self.git, self.storage, self.checkout)
+        self.wb = WorkBranch(self.git, self.storage, self.checkout)
 
     def test_current_work_branch_should_be_None(self):
         self.storage.load_work_branches.return_value = []

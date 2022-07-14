@@ -11,12 +11,13 @@ from cli.overview_cli import OverviewCli
 from features.checkout import CheckoutHistory
 from features.cleanup import Cleanup
 from features.taskhandler import TaskHandler
-from features.workbranch import Workbranch
+from features.workbranch import WorkBranch
 from tools.githelper import GitHelper
 from tools.storage import Storage
 
-from colorama import init
-init()
+import colorama
+
+colorama.init()
 
 
 class Gits:
@@ -33,7 +34,7 @@ class Gits:
 
         tasks = TaskHandler(storage)
         checkout_history = CheckoutHistory(git, storage)
-        workbranch = Workbranch(git, storage, checkout_history)
+        workbranch = WorkBranch(git, storage, checkout_history)
         branch_cleanup = Cleanup(git, storage, workbranch, tasks)
 
         self.tasks_cli = TasksCli(git, tasks)
@@ -61,7 +62,6 @@ class Gits:
             exit(0)
         self.__handle_args__(args)
 
-
     def __handle_args__(self, args):
         if (args.overview):
             self.overview_cli.print_overview(args.f)
@@ -69,6 +69,6 @@ class Gits:
             args.func(args)
 
 
-
 if __name__ == '__main__':
     Gits().main()
+

@@ -1,5 +1,5 @@
 
-class Workbranch:
+class WorkBranch:
     """
         Handle work branches with git and local storage
     """

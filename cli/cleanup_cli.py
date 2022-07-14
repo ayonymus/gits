@@ -17,6 +17,7 @@ R = "red"
 Y = "yellow"
 C = "cyan"
 
+
 class CleanupCli:
 
     def __init__(self, git, branch_cleanup):
@@ -28,7 +29,7 @@ class CleanupCli:
         cleanup_parser.add_argument("branch", nargs="?", type=str, default=None,
                                     help="Check open tasks, remove done tasks for branch, delete branch. "
                                          "Required to run from the main branch in order to detect unmerged changes. "
-                                         "Unmerged branches (relative to main) will not be deleted." )
+                                         "Unmerged branches (relative to main) will not be deleted.")
         cleanup_parser.add_argument("--addi", type=str,
                                     help="Ignore list a branch so that it's not cleaned up")
         cleanup_parser.add_argument("--removei", type=str,
@@ -61,9 +62,9 @@ class CleanupCli:
             print("Please define a branch to clean up")
 
     def cleanup(self, branch, iterate, hard_enabled):
-        validatation = self.__validate_branch__(branch, hard_enabled) 
+        validatation = self.__validate_branch__(branch, hard_enabled)
         if validatation != OK: return validatation
-        
+
         print("\nYou are about to delete '", colored(branch, Y), "' branch and remove associated tasks.")
         confirmation = confirm("Are you sure?", iterate)
         if confirmation == CANCEL:
@@ -84,12 +85,13 @@ class CleanupCli:
         if Cleanup.NOT_MERGED == result:
             print(colored("Commits not merged to main.", Y))
             if hard_enabled:
-                confirmation = confirm(colored("Caution: Deleting this branch may lead to data loss!", R) + " Delete anyways? ", False)
+                confirmation = confirm(
+                    colored("Caution: Deleting this branch may lead to data loss!", R) + " Delete anyways? ", False)
                 if (confirmation == YES):
                     retry = self.branch_cleanup.cleanup(branch, True)
                     if Cleanup.SUCCESS == retry:
                         print(colored("Branch and tasks deleted", G))
-                        return DONE              
+                        return DONE
             print(colored('Skipping branch', Y))
         return SKIP
 
@@ -97,7 +99,7 @@ class CleanupCli:
         validate = self.branch_cleanup.validate_branch(branch)
         if validate == Cleanup.MAIN_BRANCH_NOT_SET:
             print("You must set up a main branch before doing a cleanup.")
-            self.set_main_branch()            
+            self.set_main_branch()
             return BREAK
         elif validate == Cleanup.NOT_MAIN_BRANCH:
             print("Cleanup should be started from the main branch: ", colored(self.branch_cleanup.get_main_branch(), B))
@@ -119,7 +121,7 @@ class CleanupCli:
                 return OK
             else:
                 print("Skipping branch: not merged to main (%s). Use -D option to delete anyways" % branch)
-                return SKIP  
+                return SKIP
         elif validate == Cleanup.OK_TO_DELETE:
             return OK
         else:
@@ -130,7 +132,7 @@ class CleanupCli:
         ans = input("Please enter main branch name: ").lower()
         result = self.branch_cleanup.add_main_branch(ans)
         if (result):
-            print("Main branch is now: %s" % ans )
+            print("Main branch is now: %s" % ans)
         else:
             print("No such branch in repository!")
             exit(1)
@@ -163,7 +165,7 @@ class CleanupCli:
                 skipped.append(branch.name)
             elif result is DONE:
                 cleaned.append(branch.name)
-        print("")   
+        print("")
         if len(cleaned) > 0 or len(skipped) > 0:
             print("Summary")
             print("Removed: ", cleaned)

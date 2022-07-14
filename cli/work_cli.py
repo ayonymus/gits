@@ -1,7 +1,7 @@
-
 from colorama import Fore, Style
 
 WORK = Fore.CYAN + "work" + Style.RESET_ALL
+
 
 class WorkCli:
 
@@ -14,7 +14,7 @@ class WorkCli:
         work_parser.add_argument("current", nargs="?", type=str, default=None, help="Show current " + WORK + " branch")
         work_parser.add_argument("-s", action="store_true", help="Set current branch as " + WORK + " branch")
         work_parser.add_argument("-c", action="store_true", help="Checkout current " + WORK + " branch")
-        work_parser.add_argument("-ch", type=int,  help="Checkout " + WORK + " branch from history by id")
+        work_parser.add_argument("-ch", type=int, help="Checkout " + WORK + " branch from history by id")
         work_parser.add_argument("-H", "--history", action="store_true", help="Show " + WORK + " branch history")
         work_parser.add_argument("--unset", action="store_true", help="Unset " + WORK + " branch")
         work_parser.set_defaults(func=self.__handle_work__)
@@ -55,7 +55,6 @@ class WorkCli:
         if not cur_found:
             print("Current branch: " + Fore.GREEN + cur + Style.RESET_ALL)
 
-
     def set_work_branch(self):
         branch = self.workbranch.set_work_branch()
         print("Current work branch is " + Fore.CYAN + branch + Style.RESET_ALL)
@@ -71,4 +70,3 @@ class WorkCli:
     def unset_work_branch(self):
         self.workbranch.unset_work_branch()
         print("No work branch selected")
-

@@ -77,9 +77,3 @@ class TaskHandler:
             return True
         else:
             return False
-
-    def __is_valid_index__(self, list, index):
-        return len(list) > index
-
-
-
