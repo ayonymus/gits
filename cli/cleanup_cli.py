@@ -60,10 +60,10 @@ class CleanupCli:
             print("Please define a branch to clean up")
 
     def cleanup(self, branch, iterate, hard_enabled):
-        validatation = self.__validate_branch__(branch) 
+        validatation = self.__validate_branch__(branch, hard_enabled) 
         if validatation != OK: return validatation
         
-        print("\nThis will delete the branch '", colored(branch, Y), "' and remove tasks.")
+        print("\nYou are about to delete '", colored(branch, Y), "' branch and remove associated tasks.")
         confirmation = confirm("Are you sure?", iterate)
         if confirmation == CANCEL:
             print(colored('Cleanup cancelled', Y))
@@ -81,16 +81,18 @@ class CleanupCli:
         if Cleanup.NOT_EXIST == result:
             print(colored("Branch does not exist!", R))
         if Cleanup.NOT_MERGED == result:
-            print(colored("Commits not merged to main, branch could not be deleted.", Y))
+            print(colored("Commits not merged to main.", Y))
             if hard_enabled:
-                confirmation = confirm("Delete anyways? " + colored("Caution: May lead to data loss!", R), False)
+                confirmation = confirm(colored("Caution: Deleting this branch may lead to data loss!", R) + " Delete anyways? ", False)
                 if (confirmation == YES):
                     retry = self.branch_cleanup.cleanup(branch, True)
                     if Cleanup.SUCCESS == retry:
-                        return DONE
+                        print(colored("Branch and tasks deleted", G))
+                        return DONE              
+            print(colored('Skipping branch', Y))
         return SKIP
 
-    def __validate_branch__(self, branch):
+    def __validate_branch__(self, branch, hard_enabled):
         validate = self.branch_cleanup.validate_branch(branch)
         if validate == Cleanup.MAIN_BRANCH_NOT_SET:
             print("You must set up a main branch before doing a cleanup.")
@@ -108,6 +110,12 @@ class CleanupCli:
         elif validate == Cleanup.HAS_OPEN_TASKS:
             print("Skipping branch: there are still open tasks. ('%s')" % branch)
             return SKIP
+        elif validate == Cleanup.NOT_MERGED:
+            if hard_enabled:
+                return OK
+            else:
+                print("Skipping branch: not merged to main (%s). Use -D option to delete anyways" % branch)
+                return SKIP  
         elif validate == Cleanup.OK_TO_DELETE:
             return OK
         else:

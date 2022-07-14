@@ -72,6 +72,8 @@ class Cleanup:
             return self.BRANCH_IGNORED
         if self.tasks.get_tasks(branch):
             return self.HAS_OPEN_TASKS
+        if not self.git.is_merged(branch, current):
+            return self.NOT_MERGED
         return self.OK_TO_DELETE
 
     def cleanup(self, branch, hard=False):
