@@ -99,7 +99,7 @@ class CleanupCli:
             self.set_main_branch()            
             return BREAK
         elif validate == Cleanup.NOT_MAIN_BRANCH:
-            print("Cleanup should be started from the main branch! (%s)" % self.branch_cleanup.get_main_branch())
+            print("Cleanup should be started from the main branch: ", colored(self.branch_cleanup.get_main_branch(), G))
             return BREAK
         elif validate == Cleanup.CURRENT_BRANCH:
             print("Skipping currently checked out branch ('%s')" % branch)
@@ -159,7 +159,7 @@ class CleanupCli:
                 skipped.append(branch.name)
             elif result is DONE:
                 cleaned.append(branch.name)
-        print("\n")   
+        print("")   
         if len(cleaned) > 0 or len(skipped) > 0:
             print("Summary")
             print("Removed: ", cleaned)
