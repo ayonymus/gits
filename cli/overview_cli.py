@@ -69,44 +69,47 @@ class OverviewCli:
         print(tabulate(data, headers=["Branch", "State", "Tasks"]))
         print()
         print(
-        	Fore.GREEN + "Current" + Fore.RESET, 
-        	Fore.BLUE + "Main" + Fore.RESET, 
-        	Fore.CYAN + "Work" + Fore.RESET, 
-        	Style.DIM + "Not work branch" + Style.RESET_ALL,
-        	"\x1B[4m" + "Ignore cleanup" + "\x1B[0m")
+            Fore.GREEN + "Current" + Fore.RESET, 
+            Fore.BLUE + "Main" + Fore.RESET, 
+            Fore.CYAN + "Work" + Fore.RESET, 
+            Style.DIM + "Not work branch" + Style.RESET_ALL,
+            "\x1B[4m" + "Ignore cleanup" + "\x1B[0m")
         print(
-        	PUSHED + " Pushed",
-        	UPSTREAM + " Has remote br", 
-        	NO_UPSTREAM + " No remote br", 
-        	MERGED + " Merged to main")
+            PUSHED + " Pushed",
+            UPSTREAM + " Has remote br", 
+            NO_UPSTREAM + " No remote br", 
+            MERGED + " Merged to main")
 
     def __tasks__(self, br):
         task_open_nr = len(self.tasks.get_tasks(br))
         task_done_nr = len(self.tasks.get_done_tasks(br))
         total = task_done_nr + task_open_nr
         if total == 0:
-        	return ""
+            return ""
         elif task_done_nr == 0:
-        	return "All done: " + str(total)
+            return "All done: " + str(total)
         else:
-        	return str(task_open_nr) + " of " + str(total)
+            return str(task_open_nr) + " of " + str(total)
 
     def __wrk_status__(self, br, main_br, checked, wrk, wrk_hist, no_cleanup):
-        color = Style.DIM
-        if br in wrk_hist:
-            color = Fore.WHITE
+        color = ""
+        style = Style.NORMAL
+
         if br == wrk:
-            color = Fore.CYAN
-        if br == checked:
-            color = Fore.GREEN
-        if br == main_br:
-            if br == checked:
-                color = Fore.GREEN
-            else:
-                color = Fore.BLUE
+             color = Fore.CYAN
+        elif br == checked:
+             color = Fore.GREEN
+        elif br == main_br:
+             if br == checked:
+                 color = Fore.GREEN
+             else:
+                 color = Fore.BLUE
+        elif br not in wrk_hist:
+            style = Style.DIM
         if no_cleanup:
-        	br = "\x1B[4m" + br + "\x1B[0m"
-        return color + br + Style.RESET_ALL
+            br = "\x1B[4m" + br + "\x1B[0m"
+
+        return style + color + br + Style.RESET_ALL 
 
 
     def __upstream_status__(self, branch, pushed, main_br):
@@ -115,7 +118,7 @@ class OverviewCli:
 
         state = ""
         if pushed:
-        	state = PUSHED
+            state = PUSHED
         elif upstream:
             state = UPSTREAM
         elif merged:
@@ -123,10 +126,3 @@ class OverviewCli:
         else:
             state = NO_UPSTREAM
         return state
-
-
-
-
-
-
-
