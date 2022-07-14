@@ -63,15 +63,15 @@ class CheckoutCli:
 
     def checkout_activity(self, length):
         wrk = str(self.workbranch.get_work_branch())
+        current_br = str(self.git.branch())
+        current_local_branches = self.git.branches_str()
+
         history = self.checkoutHistory.get_checkout_history()
         history.reverse()
         if not self.full:
             history = dedup(history)
         if length != 0:
             history = history[:length]
-        current_br = str(self.git.branch())
-        
-        current_local_branches = self.git.branches_str()
 
         for i, branch in enumerate(history):
             br = str(branch)

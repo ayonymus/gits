@@ -12,7 +12,9 @@ class WorkBranch:
         return self.storage.get_work_branch()
 
     def get_work_branch_history(self):
-        return self.storage.load_work_branches()
+        branches = self.storage.load_work_branches()
+        branches.reverse()
+        return branches
 
     def set_work_branch(self):
         branch = self.git.branch()
