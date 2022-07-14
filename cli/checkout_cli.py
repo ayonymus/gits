@@ -14,15 +14,15 @@ class CheckoutCli:
         checkout_parser = subparsers.add_parser('checkout', help="Keep a history of checked out branches")
         checkout_parser.add_argument("checkout", nargs="?", type=str, default=None,
                                      help="Check out branch and add to checkout history")
+        checkout_parser.add_argument("-a", "--activity", nargs='?', const=10, type=int,
+                                    help="Show most recently checked out branches, duplicates removed, most recent first. Default 10, 0 list all")
         checkout_parser.add_argument("-b", "--branch", type=str, default=None,
                                      help="Create new branch, check out, and add to checkout history")
         checkout_parser.add_argument("--suffix", type=str,
                                      help="Create and check out branch with current's name plus a suffix")
-        checkout_parser.add_argument("-H", "--history", action="store_true", help="Check out history, duplicates removed, most recent first")
-        checkout_parser.add_argument("-bh", "--branchhistory", type=int,
-                                     help="Check out a branch from branch history based by id")
-        checkout_parser.add_argument("-f", "--full", action="store_true", help="Check out full history. Combine with -H and -bh")
-        checkout_parser.add_argument("-l", "--last", type=int, help="Check out x from last branch from history")
+        checkout_parser.add_argument("-H", "--history", type=int,
+                                     help="Check out a branch from branch history based on id")
+        checkout_parser.add_argument("-f", "--full", action="store_true", help="Full branch checkout history with duplicates. Combine with -a and -bh")
         checkout_parser.add_argument("-m", "--main", action="store_true", help="Check main branch")
         checkout_parser.add_argument("-w", "--work", action="store_true", help="Check work branch")
 
@@ -33,20 +33,20 @@ class CheckoutCli:
             self.full = True
         if args.checkout is not None:
             self.checkout(args.checkout)
+        elif args.activity is not None:
+            self.checkout_activity(args.activity)
         elif args.branch:
             self.checkout(args.branch, True)
         elif args.suffix:
             self.checkout("%1s_%2s" % (self.git.branch(), args.suffix), True)
         elif args.history:
-            self.checkout_history()
-        elif args.branchhistory:
-            self.checkout_from_history(args.branchhistory)
-        elif args.last:
-            self.checkout_last(args.last)
+            self.checkout_from_history(args.history)
         elif args.main:
             self.checkout_main()
         elif args.work:
             self.checkout_work()
+        elif args.example is not None:
+            print(args.example)
 
     def checkout(self, branch, new_branch=False):
         if branch == '.':
@@ -58,12 +58,14 @@ class CheckoutCli:
         else:
             print("Could not check out branch")
 
-    def checkout_history(self):
+    def checkout_activity(self, length):
         wrk = str(self.workbranch.get_work_branch())
         history = self.checkoutHistory.get_checkout_history()
         history.reverse()
         if not self.full:
             history = self.dedup(history)
+        if length != 0:
+            history = history[:length]
         current_br = str(self.git.branch())
 
         for i, branch in enumerate(history):
@@ -94,11 +96,6 @@ class CheckoutCli:
             self.checkout(branch)
         else:
             print("The branch does not exist any more")
-
-    def checkout_last(self, x):
-        branch_list = self.checkoutHistory.get_checkout_history()
-        branch = branch_list[len(branch_list) - 1 - x]
-        self.checkout(branch)
 
     def checkout_main(self):
         main = str(self.cleanup.get_main_branch())
