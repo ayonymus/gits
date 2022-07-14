@@ -11,7 +11,7 @@ class CheckoutCli:
         self.full = False
 
     def add_subparser(self, subparsers):
-        checkout_parser = subparsers.add_parser('checkout', help="Keep a history of checked out branches")
+        checkout_parser = subparsers.add_parser('checkout', help="Keep a history of checked out branches in a more readable way than reflog")
         checkout_parser.add_argument("checkout", nargs="?", type=str, default=None,
                                      help="Check out branch and add to checkout history")
         checkout_parser.add_argument("-a", "--activity", nargs='?', const=10, type=int,
@@ -51,6 +51,9 @@ class CheckoutCli:
     def checkout(self, branch, new_branch=False):
         if branch == '.':
             self.git.checkout('.')
+            return
+        if not new_branch and branch not in self.git.branches():
+            self.git.checkout(branch)
             return
         result = self.checkoutHistory.checkout(branch, new_branch)
         if result:
