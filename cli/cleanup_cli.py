@@ -15,6 +15,7 @@ DONE = 10
 G = "green"
 R = "red"
 Y = "yellow"
+C = "cyan"
 
 class CleanupCli:
 
@@ -99,10 +100,13 @@ class CleanupCli:
             self.set_main_branch()            
             return BREAK
         elif validate == Cleanup.NOT_MAIN_BRANCH:
-            print("Cleanup should be started from the main branch: ", colored(self.branch_cleanup.get_main_branch(), G))
+            print("Cleanup should be started from the main branch: ", colored(self.branch_cleanup.get_main_branch(), B))
             return BREAK
         elif validate == Cleanup.CURRENT_BRANCH:
             print("Skipping currently checked out branch ('%s')" % branch)
+            return SKIP
+        elif validate == Cleanup.CURRENT_WORK_BRANCH:
+            print("Skipping currently set work branch:", colored(branch, C))
             return SKIP
         elif validate == Cleanup.BRANCH_IGNORED:
             print("Skipping branch on ignore list ('%s')" % branch)

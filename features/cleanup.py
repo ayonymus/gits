@@ -24,8 +24,9 @@ class Cleanup:
     NOT_MERGED = 5
     BRANCH_IGNORED = 6
     CURRENT_BRANCH = 7
-    MAIN_BRANCH_NOT_SET = 8
-    OK_TO_DELETE = 9
+    CURRENT_WORK_BRANCH = 8
+    MAIN_BRANCH_NOT_SET = 9
+    OK_TO_DELETE = 10
 
     def __init__(self, git, storage, workbranch, tasks):
         self.git = git
@@ -68,6 +69,8 @@ class Cleanup:
             return self.NOT_MAIN_BRANCH
         if current == branch:
             return self.CURRENT_BRANCH
+        if branch == self.workbranch.get_work_branch():
+            return self.CURRENT_WORK_BRANCH
         if branch in self.storage.load_cleanup_ignorelist():
             return self.BRANCH_IGNORED
         if self.tasks.get_tasks(branch):
