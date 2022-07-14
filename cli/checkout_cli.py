@@ -23,8 +23,8 @@ class CheckoutCli:
         checkout_parser.add_argument("-H", "--history", type=int,
                                      help="Check out a branch from branch history based on id")
         checkout_parser.add_argument("-f", "--full", action="store_true", help="Full branch checkout history with duplicates. Combine with -a and -bh")
-        checkout_parser.add_argument("-m", "--main", action="store_true", help="Check main branch")
-        checkout_parser.add_argument("-w", "--work", action="store_true", help="Check work branch")
+        checkout_parser.add_argument("-m", "--main", action="store_true", help="Check out main branch")
+        checkout_parser.add_argument("-w", "--work", action="store_true", help="Check out work branch")
 
         checkout_parser.set_defaults(func=self.handle_checkout)
 
@@ -106,9 +106,14 @@ class CheckoutCli:
 
     def checkout_main(self):
         main = str(self.cleanup.get_main_branch())
-        self.checkout(main)
+        if main == 'None':
+            print("You have to set a main branch first!")
+        else:
+            self.checkout(main)
 
     def checkout_work(self):
-        wrk = str(self.workbranch.get_work_branch())
-        self.checkout(wrk)
+        if wrk == 'None':
+            print("You have to set a work branch first!")
+        else:
+            self.checkout(wrk)
 
