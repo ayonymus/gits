@@ -70,6 +70,8 @@ class CheckoutCli:
         if length != 0:
             history = history[:length]
         current_br = str(self.git.branch())
+        
+        current_local_branches = self.git.branches_str()
 
         for i, branch in enumerate(history):
             br = str(branch)
@@ -80,6 +82,8 @@ class CheckoutCli:
                 color = Fore.CYAN
             if current_br == branch:
                 color = Fore.GREEN
+            if branch not in current_local_branches:
+                color = Fore.LIGHTRED_EX + Style.DIM
             print(color + str(i) + " " + str(branch) + Style.RESET_ALL)
 
     def dedup(self, my_list):
