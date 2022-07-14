@@ -41,9 +41,10 @@ class OverviewCli:
             print(color + br + state + Style.RESET_ALL)
 
 
-    def print_overview(self):
-        print("Fetch...")
-        self.git.fetch()
+    def print_overview(self, fetch):
+        if (fetch):
+            print("Fetch...")
+            self.git.fetch()
 
         wrk = str(self.workbranch.get_work_branch())
         wrk_hist = self.workbranch.get_work_branch_history()
