@@ -75,7 +75,7 @@ class OverviewCli:
             Style.DIM + "Not work branch" + Style.RESET_ALL,
             "\x1B[4m" + "Ignore cleanup" + "\x1B[0m")
         print(
-            PUSHED + " Pushed",
+            PUSHED + " Sync w/ origin",
             UPSTREAM + " Has remote br", 
             NO_UPSTREAM + " No remote br", 
             MERGED + " Merged to main")
