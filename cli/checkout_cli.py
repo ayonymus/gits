@@ -35,23 +35,23 @@ class CheckoutCli:
         if args.full:
             self.full = True
         if args.checkout is not None:
-            self.checkout(args.checkout)
+            self.__checkout__(args.checkout)
         elif args.activity is not None:
-            self.checkout_activity(args.activity)
+            self.__checkout_activity__(args.activity)
         elif args.branch:
-            self.checkout(args.branch, True)
+            self.__checkout__(args.branch, True)
         elif args.suffix:
-            self.checkout("%1s_%2s" % (self.git.branch(), args.suffix), True)
+            self.__checkout__("%1s_%2s" % (self.git.branch(), args.suffix), True)
         elif args.history:
-            self.checkout_from_history(args.history)
+            self.__checkout_from_history__(args.history)
         elif args.main:
-            self.checkout_main()
+            self.__checkout_main__()
         elif args.work:
-            self.checkout_work()
+            self.__checkout_work__()
         elif args.example is not None:
             print(args.example)
 
-    def checkout(self, branch, new_branch=False):
+    def __checkout__(self, branch, new_branch=False):
         if not new_branch and branch not in self.git.branches():
             self.git.checkout(branch)
             return
@@ -62,7 +62,7 @@ class CheckoutCli:
             print("Could not check out branch")
         return result
 
-    def checkout_activity(self, length):
+    def __checkout_activity__(self, length):
         wrk = str(self.workbranch.get_work_branch())
         current_br = str(self.git.branch())
         current_local_branches = self.git.branches_str()
@@ -87,7 +87,7 @@ class CheckoutCli:
                 color = Fore.LIGHTRED_EX + Style.DIM
             print(color + str(i) + " " + str(branch) + Style.RESET_ALL)
 
-    def checkout_from_history(self, idx):
+    def __checkout_from_history__(self, idx):
         history = self.checkoutHistory.get_checkout_history()
         history.reverse()
         if not self.full:
@@ -96,21 +96,21 @@ class CheckoutCli:
         branch = history[idx]
 
         if self.git.is_existing_branch(branch):
-            self.checkout(branch)
+            self.__checkout__(branch)
         else:
             print("The branch does not exist any more")
 
-    def checkout_main(self):
+    def __checkout_main__(self):
         main = str(self.cleanup.get_main_branch())
         if main == 'None':
             print("You have to set a main branch first!")
         else:
-            self.checkout(main)
+            self.__checkout__(main)
 
-    def checkout_work(self):
+    def __checkout_work__(self):
         wrk = str(self.workbranch.get_work_branch())
         if wrk == 'None':
             print("You have to set a work branch first!")
         else:
-            self.checkout(wrk)
+            self.__checkout__(wrk)
 
