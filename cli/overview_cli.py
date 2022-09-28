@@ -23,31 +23,14 @@ class OverviewCli:
         self.tasks = tasks
         self.cleanup = branch_cleanup
 
-    def print_branches(self):
-        wrk = str(self.workbranch.get_work_branch())
-        wrk_hist = self.workbranch.get_work_branch_history()
-        checked = str(self.git.branch())
-        for i, branch in enumerate(self.git.branches()):
-            br = str(branch)
-            color = Style.DIM
-            state = ""
-            if br in wrk_hist:
-                color = Fore.WHITE
-            if br == wrk:
-                state = Fore.CYAN + " (work)"
-                color = Fore.CYAN
-            if br == checked:
-                color = Fore.GREEN
-            print(color + br + state + Style.RESET_ALL)
-
     def print_overview(self, fetch):
-        if (fetch):
+        if fetch:
             print("Fetch...")
             self.git.fetch()
 
         wrk = str(self.workbranch.get_work_branch())
         wrk_hist = self.workbranch.get_work_branch_history()
-        checked = str(self.git.branch())
+        cur = str(self.git.branch())
         cleanup_ignore = self.cleanup.get_ignorelist()
         main_br = self.cleanup.get_main_branch()
 
@@ -56,17 +39,15 @@ class OverviewCli:
             br = str(branch)
             pushed = self.git.compare_hash(br)
 
-            task_nr = len(self.tasks.get_tasks(br))
-            task_done_nr = len(self.tasks.get_done_tasks(br))
             no_cleanup = br in cleanup_ignore
 
             state = self.__upstream_status__(br, pushed, main_br)
-            br_ = self.__wrk_status__(br, main_br, checked, wrk, wrk_hist, no_cleanup)
+            br_ = self.__wrk_status__(br, main_br, cur, wrk, wrk_hist, no_cleanup)
             tasks = self.__tasks__(br)
-
+            mark = " " + Fore.GREEN + RIGHT + Fore.RESET if cur == br else ""
             data.append([br_, state, tasks])
 
-        print(tabulate(data, headers=["Branch", "State", "Tasks"]))
+        print(tabulate(data, headers=[ "Branch", "State", "Tasks"]))
         print()
         print(
             Fore.GREEN + "Current" + Fore.RESET,
@@ -76,8 +57,8 @@ class OverviewCli:
             "\x1B[4m" + "Ignore cleanup" + "\x1B[0m")
         print(
             PUSHED + " Sync w/ origin",
-            UPSTREAM + " Has remote br",
-            NO_UPSTREAM + " No remote br",
+            UPSTREAM + " Has remote",
+            NO_UPSTREAM + " No remote",
             MERGED + " Merged to main")
 
     def __tasks__(self, br):
@@ -93,17 +74,14 @@ class OverviewCli:
 
     def __wrk_status__(self, br, main_br, checked, wrk, wrk_hist, no_cleanup):
         color = ""
-        style = Style.NORMAL
+        style = ""
 
         if br == wrk:
             color = Fore.CYAN
         elif br == checked:
             color = Fore.GREEN
         elif br == main_br:
-            if br == checked:
-                color = Fore.GREEN
-            else:
-                color = Fore.BLUE
+            color = Fore.BLUE
         elif br not in wrk_hist:
             style = Style.DIM
         if no_cleanup:
