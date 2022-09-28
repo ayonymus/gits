@@ -58,8 +58,8 @@ class OverviewCli:
         print(
             PUSHED + " Sync w/ origin",
             UPSTREAM + " Has remote",
-            NO_UPSTREAM + " No remote",
-            MERGED + " Merged to main")
+            NO_UPSTREAM + " No remote, not on " + Fore.BLUE + "Main" + Fore.RESET,
+            MERGED + " Merged to " + Fore.BLUE + "Main" + Fore.RESET)
 
     def __tasks__(self, br):
         task_open_nr = len(self.tasks.get_tasks(br))
