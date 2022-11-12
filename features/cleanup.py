@@ -3,17 +3,7 @@ from tools.githelper import GitHelper
 
 class Cleanup:
     """
-    This should clean up a branch when done working.
-
-    do on a work branch - not master or development
-    should be on master or development when running
-
-    check branch if fully merged
-    check if branch has tasks not done
-
-    delete branch
-    delete done tasks and branch
-
+    Cleanup after work
     """
 
     SUCCESS = 0

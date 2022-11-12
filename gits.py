@@ -46,7 +46,7 @@ class Gits:
     def main(self):
         parser = argparse.ArgumentParser(description='Keep track when working with multiple branches on git')
         parser.add_argument("-o", "--overview", action="store_true", help="List local branches with additional data")
-        parser.add_argument("-f", action="store_true", help="Do a fetch before listing branches")
+        parser.add_argument("-f", "--fetch", action="store_true", help="Do a fetch before overview")
 
         subparsers = parser.add_subparsers()
 
@@ -64,7 +64,9 @@ class Gits:
 
     def __handle_args__(self, args):
         if args.overview:
-            self.overview_cli.print_overview(args.f)
+            self.overview_cli.print_overview(False)
+        elif args.fetch:
+            self.overview_cli.print_overview(True)
         else:
             args.func(args)
 

@@ -47,7 +47,7 @@ class OverviewCli:
             mark = " " + Fore.GREEN + RIGHT + Fore.RESET if cur == br else ""
             data.append([br_, state, tasks])
 
-        print(tabulate(data, headers=[ "Branch", "State", "Tasks"]))
+        print(tabulate(data, headers=["Branch", "State", "Tasks"]))
         print()
         print(
             Fore.GREEN + "Current" + Fore.RESET,
@@ -72,7 +72,8 @@ class OverviewCli:
         else:
             return str(task_open_nr) + " of " + str(total)
 
-    def __wrk_status__(self, br, main_br, checked, wrk, wrk_hist, no_cleanup):
+    @staticmethod
+    def __wrk_status__(br, main_br, checked, wrk, wrk_hist, no_cleanup):
         color = ""
         style = ""
 

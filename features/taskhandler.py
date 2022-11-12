@@ -42,7 +42,8 @@ class TaskHandler:
             all_done_tasks.pop(branch)
             self.storage.store_done_tasks(all_done_tasks)
 
-    def __get_list__(self, dictionary, key):
+    @staticmethod
+    def __get_list__(dictionary, key):
         if key in dictionary.keys():
             return dictionary[key]
         else:
