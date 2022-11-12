@@ -54,7 +54,7 @@ class Cleanup:
         return self.storage.load_cleanup_ignorelist()
 
     def validate_branch(self, branch):
-        current = self.git.branch().strip()
+        current = self.git.current_branch().strip()
         if current not in self.storage.load_main_branches():
             return self.NOT_MAIN_BRANCH
         if current == branch:

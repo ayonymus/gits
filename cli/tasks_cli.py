@@ -43,7 +43,7 @@ class TasksCli:
             self.print_tasks()
 
     def assign_task(self, task):
-        branch = self.git.branch()
+        branch = self.git.current_branch()
         self.assign_to_branch(branch, task)
 
     def assign_to_branch(self, branch, task):
@@ -51,7 +51,7 @@ class TasksCli:
         print("Task assigned to '%s'" % branch)
 
     def print_tasks(self):
-        br = self.git.branch()
+        br = self.git.current_branch()
         print("Tasks for %s branch:" % br)
         for i, task in enumerate(self.tasks.get_tasks(br)):
             print(i, task)
@@ -66,16 +66,16 @@ class TasksCli:
             print()
 
     def remove_task(self, index):
-        print("Done" if self.tasks.remove_task(self.git.branch(), index) else "No such task")
+        print("Done" if self.tasks.remove_task(self.git.current_branch(), index) else "No such task")
 
     def set_task_done(self, index):
-        print("Done" if self.tasks.set_task_done(self.git.branch(), index) else "No such task")
+        print("Done" if self.tasks.set_task_done(self.git.current_branch(), index) else "No such task")
 
     def move_task(self, old_pos, new_pos):
-        print("Done" if self.tasks.move_task(self.git.branch(), old_pos, new_pos) else "Index error")
+        print("Done" if self.tasks.move_task(self.git.current_branch(), old_pos, new_pos) else "Index error")
 
     def print_done(self):
-        br = self.git.branch()
+        br = self.git.current_branch()
         print("Done tasks for '%s' branch:" % br)
         for i, task in enumerate(self.tasks.get_done_tasks(br)):
             print(i, task)

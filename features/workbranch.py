@@ -17,7 +17,7 @@ class WorkBranch:
         return branches
 
     def set_work_branch(self):
-        branch = self.git.branch()
+        branch = self.git.current_branch()
         branches = self.storage.load_work_branches()
         if len(branches) == 0:
             self.storage.set_work_branch(branch)

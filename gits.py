@@ -10,6 +10,9 @@ from cli.work_cli import WorkCli
 from cli.overview_cli import OverviewCli
 from features.checkout import CheckoutHistory
 from features.cleanup import Cleanup
+from features.storage.store import Storage2
+from features.tags.tags import TagsStorage, TagsHandler
+from features.tags.tags_cli import TagsCli
 from features.taskhandler import TaskHandler
 from features.workbranch import WorkBranch
 from tools.githelper import GitHelper
@@ -43,6 +46,11 @@ class Gits:
         self.cleanup_cli = CleanupCli(git, branch_cleanup)
         self.overview_cli = OverviewCli(git, workbranch, tasks, branch_cleanup)
 
+        storage2 = Storage2(git.work_dir())
+        tags = TagsStorage(storage2)
+        tags_handler = TagsHandler(tags, git)
+        self.tags_cli = TagsCli(tags_handler)
+
     def main(self):
         parser = argparse.ArgumentParser(description='Keep track when working with multiple branches on git')
         parser.add_argument("-o", "--overview", action="store_true", help="List local branches with additional data")
@@ -50,11 +58,11 @@ class Gits:
 
         subparsers = parser.add_subparsers()
 
-        self.tasks_cli.add_subparser(subparsers)
+        self.checkout_cli.add_subparser(subparsers)
         self.workbranch_cli.add_subparser(subparsers)
         self.cleanup_cli.add_subparser(subparsers)
-        self.checkout_cli.add_subparser(subparsers)
-
+        self.tasks_cli.add_subparser(subparsers)
+        self.tags_cli.add_subparser(subparsers)
         args = parser.parse_args()
 
         if not len(sys.argv) > 1:

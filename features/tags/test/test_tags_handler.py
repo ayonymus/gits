@@ -1,28 +1,36 @@
 from unittest import TestCase
 
-from mockito import when, ANY, verify
-from mockito.mocking import mock
+from mockito import mock, when, verify
 
-from features.storage.storage2 import Storage2, StorageModel
-from features.tags.tags_handler import TagsHandler, Tags
+from features.storage.models import Tags
+from features.tags.tags import TagsStorage, TagsHandler
+from tools.githelper import GitHelper
 
 
-class TestTagsHandler(TestCase):
+class TestTagHandler(TestCase):
 
     def setUp(self):
-        self.storage: Storage2 = mock()
-        self.tags = TagsHandler(storage=self.storage)
+        self.store: TagsStorage = mock()
+        self.git: GitHelper = mock()
+        self.handler = TagsHandler(store=self.store, git=self.git)
 
-    def test_store_tags(self):
-        expected = StorageModel(Tags("one", "two", "three"))
-        when(self.storage).load_model().thenReturn(expected)
+    def test_is_main_set_true(self):
+        expected = Tags("one", "two", "three")
+        when(self.store).load_tags().thenReturn(expected)
 
-        newtags = Tags("Three", "Four", "Five")
-        self.tags.store_tags(newtags)
+        self.assertTrue(self.handler.is_main_set())
 
-        verify(self.storage).store_model(StorageModel(Tags("Three", "Four", "Five")))
+    def test_is_main_set_false(self):
+        expected = Tags(None, "two", "three")
+        when(self.store).load_tags().thenReturn(expected)
 
-    def test_load_tags(self):
-        expected = StorageModel(Tags("one", "two", "three"))
-        when(self.storage).load_model().thenReturn(expected)
-        self.assertEqual(expected.tags, self.tags.load_tags())
+        self.assertFalse(self.handler.is_main_set())
+
+    def test_set_main(self):
+        expected = Tags(None, "two", "three")
+        when(self.store).load_tags().thenReturn(expected)
+        when(self.git).current_branch().thenReturn("one")
+
+        self.handler.set_main()
+        verify(self.store).store_tags(Tags("one", "two", "three"))
+

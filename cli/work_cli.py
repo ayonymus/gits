@@ -40,7 +40,7 @@ class WorkCli:
         print("Current work branch is " + Fore.CYAN + cur + Style.RESET_ALL)
 
     def print_work_branch_history(self, length):
-        current_br = self.git.branch()
+        current_br = self.git.current_branch()
         wrk = str(self.workbranch.get_work_branch())
         current_local_branches = self.git.branches_str()
 

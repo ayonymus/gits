@@ -52,13 +52,13 @@ class CleanupCli:
             self.cleanup_print_ignorelist()
         elif args.iterate:
             self.iterative_cleanup(args.D)
-        elif args.branch is not None:
-            self.cleanup(args.branch, False, args.D)
+        elif args.current_branch is not None:
+            self.cleanup(args.current_branch, False, args.D)
         elif args.main:
             print("Main branch is %s" % self.branch_cleanup.get_main_branch())
         elif args.setmain:
             self.set_main_branch()
-        elif args.branch is None:
+        elif args.current_branch is None:
             print("Please define a branch to clean up")
 
     def cleanup(self, branch, iterate, hard_enabled):

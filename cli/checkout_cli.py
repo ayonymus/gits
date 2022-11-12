@@ -38,10 +38,10 @@ class CheckoutCli:
             self.__checkout__(args.checkout)
         elif args.activity is not None:
             self.__checkout_activity__(args.activity)
-        elif args.branch:
-            self.__checkout__(args.branch, True)
+        elif args.current_branch:
+            self.__checkout__(args.current_branch, True)
         elif args.suffix:
-            self.__checkout__("%1s_%2s" % (self.git.branch(), args.suffix), True)
+            self.__checkout__("%1s_%2s" % (self.git.current_branch(), args.suffix), True)
         elif args.history:
             self.__checkout_from_history__(args.history)
         elif args.main:
@@ -64,7 +64,7 @@ class CheckoutCli:
 
     def __checkout_activity__(self, length):
         wrk = str(self.workbranch.get_work_branch())
-        current_br = str(self.git.branch())
+        current_br = str(self.git.current_branch())
         current_local_branches = self.git.branches_str()
 
         history = self.checkoutHistory.get_checkout_history()

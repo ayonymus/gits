@@ -31,10 +31,10 @@ class GitHelper:
         return "origin/" + branch in map(lambda it: str(it), self.repo.references)
 
     def is_merged(self, branch, main):
-        merged = self.repo.git.branch('--merged', main)
+        merged = self.repo.git.current_branch('--merged', main)
         return branch in merged
 
-    def branch(self):
+    def current_branch(self):
         return self.repo.active_branch.name
 
     def branches(self):
@@ -60,9 +60,9 @@ class GitHelper:
     def delete_branch(self, branch, hard=False):
         try:
             if hard:
-                self.repo.git.branch('-D', branch)
+                self.repo.git.current_branch('-D', branch)
             else:
-                self.repo.git.branch('-d', branch)
+                self.repo.git.current_branch('-d', branch)
             return self.SUCCESS
         except git.exc.GitCommandError as e:
             if 'not found.' in e.stderr:

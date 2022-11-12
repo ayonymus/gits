@@ -30,7 +30,7 @@ class OverviewCli:
 
         wrk = str(self.workbranch.get_work_branch())
         wrk_hist = self.workbranch.get_work_branch_history()
-        cur = str(self.git.branch())
+        cur = str(self.git.current_branch())
         cleanup_ignore = self.cleanup.get_ignorelist()
         main_br = self.cleanup.get_main_branch()
 
