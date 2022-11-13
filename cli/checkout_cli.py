@@ -34,12 +34,13 @@ class CheckoutCli:
     def handle_checkout(self, args):
         if args.full:
             self.full = True
+
         if args.checkout is not None:
             self.__checkout__(args.checkout)
         elif args.activity is not None:
             self.__checkout_activity__(args.activity)
         elif args.branch:
-            self.__checkout__(args.current_branch, True)
+            self.__checkout__(args.ranch, True)
         elif args.suffix:
             self.__checkout__("%1s_%2s" % (self.git.current_branch(), args.suffix), True)
         elif args.history:
