@@ -143,7 +143,7 @@ class TestCheckoutHandler(TestCase):
 
         checkout = Checkout()
         when(self.store).load_checkouts().thenReturn(checkout)
-        when(self.git).branches().thenReturn([])
+        when(self.git).branches_str().thenReturn([])
         result = self.handler.get_logs(10, True)
 
         expected = ([])
@@ -159,10 +159,10 @@ class TestCheckoutHandler(TestCase):
         time = "2022-11-13 18:46:06.093286"
         checkout = Checkout([(branch, time), (branch2, time)])
         when(self.store).load_checkouts().thenReturn(checkout)
-        when(self.git).branches().thenReturn([branch, branch2])
+        when(self.git).branches_str().thenReturn([branch, branch2])
         result = self.handler.get_logs(10, True)
 
-        expected = ([(branch2, time, True), (branch, time, True)])
+        expected = ([(branch2, time, False), (branch, time, False)])
 
         self.assertEqual(expected, result)
         verify(self.store).load_checkouts()
@@ -177,11 +177,11 @@ class TestCheckoutHandler(TestCase):
         time = "2022-11-13 18:46:06.093286"
         checkout = Checkout([(branch, time), (branch2, time), (branch3, time), (branch4, time)])
         when(self.store).load_checkouts().thenReturn(checkout)
-        when(self.git).branches().thenReturn([branch, branch2])
+        when(self.git).branches_str().thenReturn([branch, branch2])
 
         result = self.handler.get_logs(2, False)
 
-        expected = ([(branch4, time, False), (branch3, time, False)])
+        expected = ([(branch4, time, True), (branch3, time, True)])
 
         self.assertEqual(expected, result)
         verify(self.store).load_checkouts()

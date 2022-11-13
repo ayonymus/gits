@@ -36,9 +36,9 @@ class CheckoutHandler:
             check_model: Checkout = self.store.load_checkouts()
             checkouts = check_model.checkouts
             if checkouts is None or len(checkouts) == 0:
-                check_model.checkouts = [(branch, self.time.now())]
+                check_model.checkouts = [(branch, str(self.time.now()))]
             elif checkouts[-1][0] != branch:
-                check_model.checkouts.append((branch, self.time.now()))
+                check_model.checkouts.append((branch, str(self.time.now())))
 
             self.store.store_checkouts(check_model)
             return branch
@@ -50,7 +50,7 @@ class CheckoutHandler:
         return self.checkout(f'{current}_{suffix}', True)
 
     def get_logs(self, length, full):
-        branches = set(self.git.branches())
+        branches = set(self.git.branches_str())
         logs = self.store.load_checkouts().checkouts
         if logs is None:
             return []
@@ -60,7 +60,8 @@ class CheckoutHandler:
 
         is_removed = []
         for log in logs:
-            is_removed.append((log[0], log[1], log[0] in branches))
+            removed = log[0] not in branches
+            is_removed.append((log[0], log[1], removed))
         return is_removed
 
     def checkout_main(self):

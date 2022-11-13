@@ -44,5 +44,5 @@ class CheckoutCli:
     def print_logs(self, length, full):
         logs = self.handler.get_logs(length, full)
         for log in logs:
-            print(f'{log[0]} {Deleted if logs[2] else ""}')
+            print(f'{log[0]} {Deleted if log[2] else ""}')
 
