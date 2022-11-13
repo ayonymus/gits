@@ -31,7 +31,7 @@ class GitHelper:
         return "origin/" + branch in map(lambda it: str(it), self.repo.references)
 
     def is_merged(self, branch, main):
-        merged = self.repo.git.current_branch('--merged', main)
+        merged = self.repo.git.branch('--merged', main)
         return branch in merged
 
     def current_branch(self):

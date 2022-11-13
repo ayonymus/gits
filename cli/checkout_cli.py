@@ -38,7 +38,7 @@ class CheckoutCli:
             self.__checkout__(args.checkout)
         elif args.activity is not None:
             self.__checkout_activity__(args.activity)
-        elif args.current_branch:
+        elif args.branch:
             self.__checkout__(args.current_branch, True)
         elif args.suffix:
             self.__checkout__("%1s_%2s" % (self.git.current_branch(), args.suffix), True)
