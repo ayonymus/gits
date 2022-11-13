@@ -52,9 +52,10 @@ class TagsCli:
 
     def print_tags(self):
         tags: Tags = self.tags.get_tags()
-        print(f"{Main}: {tags.main}")
-        print(f"{Work}: {tags.work[0] or None}")
-        print(f"{Important}: {tags.important}")
+        not_set = "[Not set]"
+        print(f"{Main}: {tags.main or not_set}")
+        print(f"{Work}: {tags.work[0] if tags.work else not_set or not_set}")
+        print(f"{Important}: {tags.important or not_set}")
 
     def print_work_logs(self):
         tags: Tags = self.tags.get_tags()
