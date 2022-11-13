@@ -9,6 +9,7 @@ Current = colored('Current', 'green')
 Main = colored('Main', 'blue')
 Work = colored('Work', 'cyan')
 Important = "\x1B[4m" + "Important" + "\x1B[0m"
+Deleted = colored('[Deleted]', 'red')
 
 
 class TagsCli:

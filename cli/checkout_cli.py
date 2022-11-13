@@ -14,8 +14,8 @@ class CheckoutCli:
         self.full = False
 
     def add_subparser(self, subparsers):
-        checkout_parser = subparsers.add_parser('checkout', help="Keep a history of checked out branches in a more readable way than reflog")
-        checkout_parser.add_argument("checkout", nargs="?", type=str, default=None,
+        checkout_parser = subparsers.add_parser('checkout_old', help="Keep a history of checked out branches in a more readable way than reflog")
+        checkout_parser.add_argument("checkout_old", nargs="?", type=str, default=None,
                                      help="Check out branch and add to checkout history")
         checkout_parser.add_argument("-a", "--activity", nargs='?', const=10, type=int,
                                     help="Show most recently checked out branches, duplicates removed, most recent first. Default 10, 0 list all")

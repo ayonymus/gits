@@ -3,12 +3,12 @@
 import argparse
 import sys
 
-from cli.checkout_cli import CheckoutCli
 from cli.cleanup_cli import CleanupCli
 from cli.tasks_cli import TasksCli
 from cli.work_cli import WorkCli
 from cli.overview_cli import OverviewCli
 from features.checkout import CheckoutHistory
+from features.checkout2.checkout import CheckoutHandler, CheckoutStore
 from features.cleanup import Cleanup
 from features.storage.store import Storage2
 from features.tags.tags import TagsStorage, TagsHandler
@@ -41,7 +41,6 @@ class Gits:
         branch_cleanup = Cleanup(git, storage, workbranch, tasks)
 
         self.tasks_cli = TasksCli(git, tasks)
-        self.checkout_cli = CheckoutCli(git, checkout_history, workbranch, branch_cleanup)
         self.workbranch_cli = WorkCli(git, workbranch)
         self.cleanup_cli = CleanupCli(git, branch_cleanup)
         self.overview_cli = OverviewCli(git, workbranch, tasks, branch_cleanup)
@@ -50,6 +49,11 @@ class Gits:
         tags = TagsStorage(storage2)
         tags_handler = TagsHandler(tags, git)
         self.tags_cli = TagsCli(tags_handler)
+
+        checkout_store = CheckoutStore(storage2)
+        checkout_handler = CheckoutHandler(checkout_store, git, tags_handler)
+        from features.checkout2.checkout_cli import CheckoutCli
+        self.checkout_cli = CheckoutCli(checkout_handler)
 
     def main(self):
         parser = argparse.ArgumentParser(description='Keep track when working with multiple branches on git')
