@@ -19,7 +19,7 @@ class Storage2:
                 data: StorageModel = jsonpickle.decode(json_file.read())
                 return data
         except Exception:
-            return StorageModel(Tags(None, None, None))
+            return StorageModel(Tags())
 
     def store_model(self, storage_model):
         with open(self.__storage_file__, 'w') as json_file:

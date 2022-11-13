@@ -1,8 +1,7 @@
-import json
 
 
 class Tags(object):
-    def __init__(self, main, work, important):
+    def __init__(self, main=None, work=None, important=None):
         self.main = main
         self.work = work
         self.important = important

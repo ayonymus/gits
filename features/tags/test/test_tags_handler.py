@@ -32,5 +32,60 @@ class TestTagHandler(TestCase):
         when(self.git).current_branch().thenReturn("one")
 
         self.handler.set_main()
+
         verify(self.store).store_tags(Tags("one", "two", "three"))
+
+    def test_set_work(self):
+        expected = Tags("one", None, {"three"})
+        when(self.store).load_tags().thenReturn(expected)
+        when(self.git).current_branch().thenReturn("two")
+
+        self.handler.set_work()
+
+        verify(self.store).store_tags(Tags("one", ["two"], {"three"}))
+
+    def test_set_work_existing(self):
+        expected = Tags("one", ["two"], {"three"})
+        when(self.store).load_tags().thenReturn(expected)
+        when(self.git).current_branch().thenReturn("four")
+
+        self.handler.set_work()
+
+        verify(self.store).store_tags(Tags("one", ["four", "two"], {"three"}))
+
+    def test_set_work_not_same(self):
+        expected = Tags("one", ["four", "two"], {"three"})
+        when(self.store).load_tags().thenReturn(expected)
+        when(self.git).current_branch().thenReturn("four")
+
+        self.handler.set_work()
+
+        verify(self.store).store_tags(Tags("one", ["four", "two"], {"three"}))
+
+    def test_add_important(self):
+        expected = Tags("one", ["two"], None)
+        when(self.store).load_tags().thenReturn(expected)
+        when(self.git).current_branch().thenReturn("three")
+
+        self.handler.add_important()
+
+        verify(self.store).store_tags(Tags("one", ["two"], {"three"}))
+
+    def test_add_important_already_existing_dict(self):
+        expected = Tags("one", "two",  {"three"})
+        when(self.store).load_tags().thenReturn(expected)
+        when(self.git).current_branch().thenReturn("four")
+
+        self.handler.add_important()
+
+        verify(self.store).store_tags(Tags("one", "two", {"three", "four"}))
+
+    def test_add_important_already_in(self):
+        expected = Tags("one", "two",  {"three"})
+        when(self.store).load_tags().thenReturn(expected)
+        when(self.git).current_branch().thenReturn("three")
+
+        self.handler.add_important()
+
+        verify(self.store).store_tags(Tags("one", "two", {"three"}))
 

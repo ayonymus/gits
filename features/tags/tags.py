@@ -27,6 +27,28 @@ class TagsHandler:
         tags.main = current
         self.store.store_tags(tags)
 
+    def set_work(self):
+        current = self.git.current_branch()
+        tags = self.store.load_tags()
+        if tags.work is None:
+            tags.work = [current]
+        elif tags.work[0] != current:
+            tags.work.insert(0, current)
+        self.store.store_tags(tags)
+
+    def add_important(self):
+        current = self.git.current_branch()
+        tags = self.store.load_tags()
+        imp = tags.important
+        if imp is None:
+            tags.important = {current}
+        else:
+            tags.important.add(current)
+        self.store.store_tags(tags)
+
+    def get_tags(self):
+        return self.store.load_tags()
+
 
 class TagsStorage:
 
