@@ -20,7 +20,7 @@ class CheckoutCli:
         checkout_parser.add_argument("-a", "--activity", nargs='?', const=10, type=int,
                                     help="Show most recently checked out branches, duplicates removed, most recent first. Default 10, 0 list all")
         checkout_parser.add_argument("-b", "--branch", type=str, default=None,
-                                     help="Create new branch, check out, and add to checkout history")
+                                     help="Create new branch, check out, and add to checkout2 history")
         checkout_parser.add_argument("--suffix", type=str,
                                      help="Create and check out branch with current's name plus a suffix")
         checkout_parser.add_argument("-H", "--history", type=int,

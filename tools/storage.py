@@ -77,7 +77,7 @@ class Storage:
         data[KEY_TASK_DONE] = tasks
         self.store(data)
 
-    # checkout history
+    # checkout2 history
     def load_checkout_history(self):
         try:
             return self.load()[KEY_CHECKOUT_HISTORY]

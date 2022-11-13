@@ -8,7 +8,7 @@ from features.storage.store import Storage2, StorageModel
 from features.tags.tags import TagsStorage
 
 
-class TestTagsHandler(TestCase):
+class TestTagsStorage(TestCase):
 
     def setUp(self):
         self.storage: Storage2 = mock()
