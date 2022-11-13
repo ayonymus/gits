@@ -37,8 +37,8 @@ class CheckoutHandler:
             checkouts = check_model.checkouts
             if checkouts is None or len(checkouts) == 0:
                 check_model.checkouts = [(branch, str(self.time.now()))]
-            elif checkouts[-1][0] != branch:
-                check_model.checkouts.append((branch, str(self.time.now())))
+            elif checkouts[0] != branch:
+                check_model.checkouts.insert(0, (branch, str(self.time.now())))
 
             self.store.store_checkouts(check_model)
             return branch
@@ -71,6 +71,10 @@ class CheckoutHandler:
     def checkout_work(self):
         work = self.tags.get_tags().work
         return self.checkout(work[0]) if work else None
+
+    def checkout_prev(self):
+        logs = self.store.load_checkouts().checkouts
+        return self.checkout(logs[1][0]) if len(logs) > 1 else None
 
 
 

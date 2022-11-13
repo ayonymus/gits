@@ -16,11 +16,12 @@ class CheckoutCli:
                             help="Create new branch, check out, and add to checkout logs")
         parser.add_argument("--suffix", type=str,
                             help="Create and check out branch with current branches name plus _suffix")
+        parser.add_argument("-m", "--main", action="store_true", help=f"Check out {Main} branch")
+        parser.add_argument("-w", "--work", action="store_true", help=f"Check out {Work} branch")
+        parser.add_argument("-p", "--prev", action="store_true", help=f"Check out previous branch")
         parser.add_argument("-l", "--logs", nargs='?', const=10, type=int,
                             help="Show truncated checkout logs. Provide -f flag for full list.")
         parser.add_argument("-f", "--full", action="store_true", help="Use full log list.")
-        parser.add_argument("-m", "--main", action="store_true", help=f"Check out {Main} branch")
-        parser.add_argument("-w", "--work", action="store_true", help=f"Check out {Work} branch")
         parser.set_defaults(func=self.handle_checkout)
 
     def handle_checkout(self, args):
@@ -34,6 +35,8 @@ class CheckoutCli:
             self.print_message(self.handler.checkout_main())
         elif args.work:
             self.print_message(self.handler.checkout_work())
+        elif args.prev:
+            self.print_message(self.handler.checkout_prev())
         elif args.logs:
             self.print_logs(args.logs, args.full)
 

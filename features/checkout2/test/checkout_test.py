@@ -75,7 +75,7 @@ class TestCheckoutHandler(TestCase):
 
         result = self.handler.checkout(branch2)
 
-        expected = Checkout([(branch, time), (branch2, time2)])
+        expected = Checkout([(branch2, time2), (branch, time)])
 
         self.assertTrue(result)
         verify(self.store).load_checkouts()
@@ -241,7 +241,29 @@ class TestCheckoutHandler(TestCase):
 
         result = self.handler.checkout_work()
 
-        self.assertEquals(None, result)
+        self.assertEqual(None, result)
         verifyNoUnwantedInteractions(self.git)
         verifyNoUnwantedInteractions(self.time)
         verifyNoUnwantedInteractions(self.store)
+
+    def test_checkout_previous(self):
+        work = "work"
+        work2 = "work2"
+        time = "2022-11-13 18:46:06.093286"
+
+        start = Checkout([(work2, time), (work, time)])
+
+        when(self.git).checkout(work, False).thenReturn(True)
+        when(self.store).load_checkouts().thenReturn(start)
+        when(self.time).now().thenReturn(time)
+
+        result = self.handler.checkout_prev()
+
+        expected = Checkout([(work, time), (work2, time), (work, time)])
+
+        self.assertEqual(work, result)
+        verify(self.store, times=2).load_checkouts()
+        verify(self.time).now()
+        verify(self.store).store_checkouts(expected)
+        verifyNoUnwantedInteractions(self.store)
+
