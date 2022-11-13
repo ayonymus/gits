@@ -43,11 +43,11 @@ class TagsCli:
     def set_main(self):
         result = YES
         if self.tags.is_main_set():
-            result = confirm("Are you sure you want to change %s branch?" % Main)
+            result = confirm(f"Are you sure you want to change {Main} branch?")
         if result == YES:
             self.tags.set_main()
         else:
-            print("%s branch not updated." % Main)
+            print(f"{Main} branch not updated.")
 
     def print_tags(self):
         tags: Tags = self.tags.get_tags()
