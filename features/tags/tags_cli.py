@@ -1,14 +1,14 @@
+from termcolor import colored
+
 from cli.tools import confirm, YES
 from features.storage.models import Tags
 from features.tags.tags import TagsHandler
 
-"""
-            Fore.GREEN + "Current" + Fore.RESET,
-            Fore.BLUE + "Main" + Fore.RESET,
-            Fore.CYAN + "Work" + Fore.RESET,
-            Style.DIM + "Not work branch" + Style.RESET_ALL,
-            "\x1B[4m" + "Ignore cleanup" + "\x1B[0m") // undewrline
-"""
+
+Current = colored('Current', 'green')
+Main = colored('Main', 'blue')
+Work = colored('Work', 'cyan')
+Important = "\x1B[4m" + "Important" + "\x1B[0m"
 
 
 class TagsCli:
@@ -17,16 +17,14 @@ class TagsCli:
         self.tags = tags
 
     def add_subparser(self, subparser):
-        """
-        |     |     | -i, --important     | set current as important, so that it wont be cleaned up or deleted | update description |
-        |     |     | -l, --list  | list tags | |
-        """
-        parser = subparser.add_parser("tags", help="Add special tags to branches")
-        parser.add_argument("--setmain", action="store_true", help="Set current branch the main branch")
-        parser.add_argument("--setwork", action="store_true", help="Set current branch the work branch")
-        parser.add_argument("-l", "--worklogs", action="store_true", help="Show work branch logs")
+        parser = subparser.add_parser("tags", help="Manage special and custom tags for branches")
+        parser.add_argument("--setmain", action="store_true",
+                            help=f"Set {Current} branch the {Main} branch")
+        parser.add_argument("--setwork", action="store_true",
+                            help=f"Set {Current} branch the {Work} branch")
+        parser.add_argument("-l", "--worklogs", action="store_true", help=f"Show {Work} branch logs")
         parser.add_argument("-i", "--important", action="store_true",
-                            help="Mark current branch as Important (won't be cleared)")
+                            help=f"Mark {Current} branch as {Important} (won't be cleared)")
 
         parser.set_defaults(func=self.handle)
 
@@ -45,18 +43,19 @@ class TagsCli:
     def set_main(self):
         result = YES
         if self.tags.is_main_set():
-            result = confirm("Are you sure you want to change main branch?")
+            result = confirm("Are you sure you want to change %s branch?" % Main)
         if result == YES:
             self.tags.set_main()
         else:
-            print("Main branch not updated.")
+            print("%s branch not updated." % Main)
 
     def print_tags(self):
         tags: Tags = self.tags.get_tags()
-        print(tags.main)
-        print(tags.work)
-        print(tags.important)
+        print(f"{Main}: {tags.main}")
+        print(f"{Work}: {tags.work[0] or None}")
+        print(f"{Important}: {tags.important}")
 
     def print_work_logs(self):
         tags: Tags = self.tags.get_tags()
+        print(f"Most recent {Work} branches")
         print(tags.work)
