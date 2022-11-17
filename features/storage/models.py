@@ -9,7 +9,7 @@ class Tags(object):
         return isinstance(other, self.__class__) \
                and self.main == other.main \
                and self.work == other.work \
-               and self.important == other.important \
+               and self.important == other.important
 
 
 class Checkout(object):

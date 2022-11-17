@@ -14,6 +14,7 @@ from features.storage.store import Storage2
 from features.tags.tags import TagsStorage, TagsHandler
 from features.tags.tags_cli import TagsCli
 from features.taskhandler import TaskHandler
+from features.work.work import WorkHandler
 from features.workbranch import WorkBranch
 from tools.githelper import GitHelper
 from tools.storage import Storage
@@ -41,7 +42,7 @@ class Gits:
         branch_cleanup = Cleanup(git, storage, workbranch, tasks)
 
         self.tasks_cli = TasksCli(git, tasks)
-        self.workbranch_cli = WorkCli(git, workbranch)
+        # self.workbranch_cli = WorkCli(git, workbranch)
         self.cleanup_cli = CleanupCli(git, branch_cleanup)
         self.overview_cli = OverviewCli(git, workbranch, tasks, branch_cleanup)
 
@@ -55,6 +56,10 @@ class Gits:
         from features.checkout2.checkout_cli import CheckoutCli
         self.checkout_cli = CheckoutCli(checkout_handler)
 
+        work_handler = WorkHandler(tags_handler, checkout_handler, git)
+        from features.work.work_cli import WorkCli
+        self.work_cli = WorkCli(work_handler)
+
     def main(self):
         parser = argparse.ArgumentParser(description='Keep track when working with multiple branches on git')
         parser.add_argument("-o", "--overview", action="store_true", help="List local branches with additional data")
@@ -63,7 +68,8 @@ class Gits:
         subparsers = parser.add_subparsers()
 
         self.checkout_cli.add_subparser(subparsers)
-        self.workbranch_cli.add_subparser(subparsers)
+        self.work_cli.add_subparser(subparsers)
+
         self.cleanup_cli.add_subparser(subparsers)
         self.tasks_cli.add_subparser(subparsers)
         self.tags_cli.add_subparser(subparsers)

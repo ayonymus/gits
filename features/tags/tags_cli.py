@@ -1,15 +1,9 @@
 from termcolor import colored
 
-from cli.tools import confirm, YES
+from cli.tools import YES, confirm
 from features.storage.models import Tags
+from features.tags.color import Main, Work, Important, Current
 from features.tags.tags import TagsHandler
-
-
-Current = colored('Current', 'green')
-Main = colored('Main', 'blue')
-Work = colored('Work', 'cyan')
-Important = "\x1B[4m" + "Important" + "\x1B[0m"
-Deleted = colored('[Deleted]', 'red')
 
 
 class TagsCli:

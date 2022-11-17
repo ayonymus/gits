@@ -1,5 +1,5 @@
 from features.checkout2.checkout import CheckoutHandler
-from features.tags.tags_cli import Deleted, Main, Work
+from features.tags.color import Main, Work, Deleted
 
 
 class CheckoutCli:

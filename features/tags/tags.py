@@ -48,6 +48,7 @@ class TagsHandler:
         elif tags.work[0] != current:
             tags.work.insert(0, current)
         self.store.store_tags(tags)
+        return current
 
     def add_important(self):
         current = self.git.current_branch()
