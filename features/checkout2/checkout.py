@@ -39,7 +39,6 @@ class CheckoutHandler:
                 check_model.checkouts = [(branch, str(self.time.now()))]
             elif checkouts[0] != branch:
                 check_model.checkouts.insert(0, (branch, str(self.time.now())))
-
             self.store.store_checkouts(check_model)
             return branch
         else:

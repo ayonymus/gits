@@ -1,4 +1,4 @@
-from features.tags.color import Work, work, error, Deleted, main, important
+from cli.color import Work, work, error, Deleted, main, important, apply_color
 from features.work.work import WorkHandler
 
 
@@ -40,14 +40,5 @@ class WorkCli:
         tags = self.handler.tags.get_tags()
         logs = self.handler.get_logs(length, full)
         for log in logs:
-            print(f'{self.color_if_needed(log[0], tags, log[1])} {Deleted if log[1] else ""}')
+            print(f'{apply_color(log[0], tags, log[1])} {Deleted if log[1] else ""}')
 
-    def color_if_needed(self, branch, tags, deleted):
-        if deleted:
-            return deleted(branch)
-        if branch == tags.main:
-            return main(branch)
-        if branch == tags.work[0]:
-            return work(branch)
-        if branch in tags.important:
-            return important(branch)

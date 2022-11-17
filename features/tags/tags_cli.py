@@ -1,8 +1,6 @@
-from termcolor import colored
-
 from cli.tools import YES, confirm
 from features.storage.models import Tags
-from features.tags.color import Main, Work, Important, Current
+from cli.color import Main, Work, Important, Current
 from features.tags.tags import TagsHandler
 
 

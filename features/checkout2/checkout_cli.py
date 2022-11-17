@@ -1,5 +1,5 @@
 from features.checkout2.checkout import CheckoutHandler
-from features.tags.color import Main, Work, Deleted
+from cli.color import Main, Work, Deleted, apply_color
 
 
 class CheckoutCli:
@@ -46,6 +46,7 @@ class CheckoutCli:
 
     def print_logs(self, length, full):
         logs = self.handler.get_logs(length, full)
+        tags = self.handler.tags.get_tags()
         for log in logs:
-            print(f'{log[0]} {Deleted if log[2] else ""}')
+            print(f'{apply_color(log[0], tags, log[2])}, {Deleted if log[2] else ""}')
 
