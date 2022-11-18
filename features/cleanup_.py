@@ -1,7 +1,7 @@
 from tools.githelper import GitHelper
 
 
-class Cleanup:
+class Cleanup_:
     """
     Cleanup after work
     """

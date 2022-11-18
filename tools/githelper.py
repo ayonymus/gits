@@ -60,9 +60,9 @@ class GitHelper:
     def delete_branch(self, branch, hard=False):
         try:
             if hard:
-                self.repo.git.current_branch('-D', branch)
+                self.repo.git.branch('-D', branch)
             else:
-                self.repo.git.current_branch('-d', branch)
+                self.repo.git.branch('-d', branch)
             return self.SUCCESS
         except git.exc.GitCommandError as e:
             if 'not found.' in e.stderr:
