@@ -3,23 +3,17 @@
 import argparse
 import sys
 
-from cli.cleanup_cli import CleanupCli
+import colorama
+
 from cli.tasks_cli import TasksCli
-from cli.work_cli import WorkCli
-from cli.overview_cli import OverviewCli
-from features.checkout import CheckoutHistory
 from features.checkout2.checkout import CheckoutHandler, CheckoutStore
-from features.cleanup import Cleanup
 from features.storage.store import Storage2
 from features.tags.tags import TagsStorage, TagsHandler
 from features.tags.tags_cli import TagsCli
 from features.taskhandler import TaskHandler
 from features.work.work import WorkHandler
-from features.workbranch import WorkBranch
 from tools.githelper import GitHelper
 from tools.storage import Storage
-
-import colorama
 
 colorama.init()
 
@@ -37,14 +31,8 @@ class Gits:
         storage = Storage(git.work_dir())
 
         tasks = TaskHandler(storage)
-        checkout_history = CheckoutHistory(git, storage)
-        workbranch = WorkBranch(git, storage, checkout_history)
-        branch_cleanup = Cleanup(git, storage, workbranch, tasks)
 
         self.tasks_cli = TasksCli(git, tasks)
-        # self.workbranch_cli = WorkCli(git, workbranch)
-        self.cleanup_cli = CleanupCli(git, branch_cleanup)
-        self.overview_cli = OverviewCli(git, workbranch, tasks, branch_cleanup)
 
         storage2 = Storage2(git.work_dir())
         tags = TagsStorage(storage2)
@@ -70,7 +58,6 @@ class Gits:
         self.checkout_cli.add_subparser(subparsers)
         self.work_cli.add_subparser(subparsers)
 
-        self.cleanup_cli.add_subparser(subparsers)
         self.tasks_cli.add_subparser(subparsers)
         self.tags_cli.add_subparser(subparsers)
         args = parser.parse_args()
@@ -82,9 +69,11 @@ class Gits:
 
     def __handle_args__(self, args):
         if args.overview:
-            self.overview_cli.print_overview(False)
+            # self.overview_cli.print_overview(False)
+            pass
         elif args.fetch:
-            self.overview_cli.print_overview(True)
+            # self.overview_cli.print_overview(True)
+            pass
         else:
             args.func(args)
 
