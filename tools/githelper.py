@@ -77,7 +77,7 @@ class GitHelper:
         for remote in self.repo.remotes:
             remote.fetch()
 
-    def compare_hash(self, branch):
+    def is_pushed(self, branch):
         if not self.has_remote(branch):
             return False
         remoteSha = git.Git().execute("git rev-parse origin/" + branch, shell=True, with_stdout=True)

@@ -7,6 +7,7 @@ import colorama
 
 from cli.tasks_cli import TasksCli
 from features.checkout2.checkout import CheckoutHandler, CheckoutStore
+from features.overview_cli import OverviewCli
 from features.storage.store import Storage2
 from features.tags.tags import TagsStorage, TagsHandler
 from features.tags.tags_cli import TagsCli
@@ -48,6 +49,8 @@ class Gits:
         from features.work.work_cli import WorkCli
         self.work_cli = WorkCli(work_handler)
 
+        self.overview = OverviewCli(git, tags_handler)
+
     def main(self):
         parser = argparse.ArgumentParser(description='Keep track when working with multiple branches on git')
         parser.add_argument("-o", "--overview", action="store_true", help="List local branches with additional data")
@@ -69,10 +72,10 @@ class Gits:
 
     def __handle_args__(self, args):
         if args.overview:
-            # self.overview_cli.print_overview(False)
+            self.overview.overview(False)
             pass
         elif args.fetch:
-            # self.overview_cli.print_overview(True)
+            self.overview.overview(True)
             pass
         else:
             args.func(args)

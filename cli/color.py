@@ -30,7 +30,7 @@ def deleted(branch): return colored(branch, DELETED)
 def error(msg): return colored(msg, 'red')
 
 
-def apply_color(branch, tags, is_deleted):
+def apply_color(branch, tags, is_deleted, current=None):
     if is_deleted:
         return deleted(branch)
     if tags.main is not None and branch == tags.main:
@@ -39,4 +39,6 @@ def apply_color(branch, tags, is_deleted):
         return work(branch)
     if tags.important is not None and branch in tags.important:
         return important(branch)
+    if branch == current:
+        return current(branch)
     return branch
