@@ -1,7 +1,7 @@
 
 import jsonpickle
 
-from features.storage.models import StorageModel, Tags
+from data.models import StorageModel, Tags
 
 PATH_STORAGE2 = "/.git/gits2"
 

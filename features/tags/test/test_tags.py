@@ -1,10 +1,10 @@
 from unittest import TestCase
 
-from mockito import when, ANY, verify
+from mockito import when, verify
 from mockito.mocking import mock
 
-from features.storage.models import Tags
-from features.storage.store import Storage2, StorageModel
+from data.models import Tags
+from data.store import Storage2, StorageModel
 from features.tags.tags import TagsStorage
 
 

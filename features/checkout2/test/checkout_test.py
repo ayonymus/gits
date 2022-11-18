@@ -1,8 +1,8 @@
 from unittest import TestCase
-from mockito import mock, when, verify, ANY, verifyNoUnwantedInteractions
+from mockito import mock, when, verify, verifyNoUnwantedInteractions
 
 from features.checkout2.checkout import CheckoutHandler, CheckoutStore
-from features.storage.models import Checkout, Tags
+from data.models import Checkout, Tags
 from features.tags.tags import TagsHandler
 from tools.githelper import GitHelper
 

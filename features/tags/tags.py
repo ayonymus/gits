@@ -1,7 +1,7 @@
 
 from enum import Enum
 
-from features.storage.store import Storage2
+from data.store import Storage2
 from tools.githelper import GitHelper
 
 

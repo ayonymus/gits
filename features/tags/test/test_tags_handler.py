@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from mockito import mock, when, verify
 
-from features.storage.models import Tags
+from data.models import Tags
 from features.tags.tags import TagsStorage, TagsHandler
 from tools.githelper import GitHelper
 

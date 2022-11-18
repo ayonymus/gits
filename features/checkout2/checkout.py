@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from features.storage.models import Checkout
-from features.storage.store import Storage2
+from data.models import Checkout
+from data.store import Storage2
 from features.tags.tags import TagsHandler
 from tools.githelper import GitHelper
 

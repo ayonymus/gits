@@ -8,7 +8,7 @@ import colorama
 from cli.tasks_cli import TasksCli
 from features.checkout2.checkout import CheckoutHandler, CheckoutStore
 from features.overview_cli import OverviewCli
-from features.storage.store import Storage2
+from data.store import Storage2
 from features.tags.tags import TagsStorage, TagsHandler
 from features.tags.tags_cli import TagsCli
 from features.taskhandler import TaskHandler

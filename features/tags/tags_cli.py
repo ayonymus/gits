@@ -1,5 +1,5 @@
 from cli.tools import YES, confirm
-from features.storage.models import Tags
+from data.models import Tags
 from cli.color import Main, Work, Important, Current
 from features.tags.tags import TagsHandler
 
