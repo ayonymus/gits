@@ -57,7 +57,7 @@ class Gits:
         self.cleanup_cli = CleanupCli(cleanup_handler)
 
     def main(self):
-        parser = argparse.ArgumentParser(description='Keep track when working with multiple branches on git')
+        parser = argparse.ArgumentParser(description='Keep track of work when working on multiple branches')
         parser.add_argument("-o", "--overview", action="store_true", help="List local branches with additional data")
         parser.add_argument("-f", "--fetch", action="store_true", help="Do a fetch before overview")
 

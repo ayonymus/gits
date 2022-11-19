@@ -53,7 +53,6 @@ class CheckoutHandler:
         logs = self.store.load_checkouts().checkouts
         if logs is None:
             return []
-        logs.reverse()
         if not full:
             logs = logs[:length]
 

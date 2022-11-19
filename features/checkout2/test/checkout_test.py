@@ -157,7 +157,7 @@ class TestCheckoutHandler(TestCase):
         branch = "branch"
         branch2 = "branch2"
         time = "2022-11-13 18:46:06.093286"
-        checkout = Checkout([(branch, time), (branch2, time)])
+        checkout = Checkout([(branch2, time), (branch, time)])
         when(self.store).load_checkouts().thenReturn(checkout)
         when(self.git).branches_str().thenReturn([branch, branch2])
         result = self.handler.get_logs(10, True)
@@ -177,11 +177,11 @@ class TestCheckoutHandler(TestCase):
         time = "2022-11-13 18:46:06.093286"
         checkout = Checkout([(branch, time), (branch2, time), (branch3, time), (branch4, time)])
         when(self.store).load_checkouts().thenReturn(checkout)
-        when(self.git).branches_str().thenReturn([branch, branch2])
+        when(self.git).branches_str().thenReturn([branch3, branch4])
 
         result = self.handler.get_logs(2, False)
 
-        expected = ([(branch4, time, True), (branch3, time, True)])
+        expected = ([(branch, time, True), (branch2, time, True)])
 
         self.assertEqual(expected, result)
         verify(self.store).load_checkouts()
