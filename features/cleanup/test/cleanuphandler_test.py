@@ -61,7 +61,6 @@ class TestCleanupHandler(TestCase):
     def test_current_work_none(self):
         tags = Tags(main=MAIN)
         when(self.tags).get_tags().thenReturn(tags)
-        print(tags.work)
         self.assertEqual(Validation.OK_TO_DELETE, self.handler.validate_branch(WORK))
 
     def test_important(self):
@@ -70,6 +69,15 @@ class TestCleanupHandler(TestCase):
     def test_important_none(self):
         tags = Tags(main=MAIN)
         when(self.tags).get_tags().thenReturn(tags)
-        print(tags.work)
         self.assertEqual(Validation.OK_TO_DELETE, self.handler.validate_branch(IMP))
+
+    def test_in_synch_remote(self):
+        when(self.git).has_remote().thenReturn(True)
+        when(self.git).is_pushed().thenReturn(True)
+        self.assertEqual(Validation.OK_TO_DELETE, self.handler.validate_branch(BRANCH))
+
+    def test_not_in_synch_with_remote(self):
+        when(self.git).has_remote(BRANCH).thenReturn(True)
+        when(self.git).is_pushed(BRANCH).thenReturn(False)
+        self.assertEqual(Validation.NOT_SYNC_WITH_REMOTE, self.handler.validate_branch(BRANCH))
 

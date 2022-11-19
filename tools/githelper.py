@@ -73,6 +73,13 @@ class GitHelper:
                 print(e.stderr)
             return self.ERROR
 
+    def delete_remote(self, branch):
+        try:
+            git.Git().execute("git push origin -d " + branch, shell=True, with_stdout=True)
+        except git.exc.GitCommandError as e:
+            print(e.stderr)
+            return False
+
     def fetch(self):
         for remote in self.repo.remotes:
             remote.fetch()

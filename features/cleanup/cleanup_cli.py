@@ -7,6 +7,7 @@ OK = 0
 SKIP = 1
 BREAK = 2
 NOT_MERGED = 3
+NOT_SYNCED = 4
 DONE = 10
 
 
@@ -25,25 +26,29 @@ class CleanupCli:
                             help=f'{deleted("Delete")} branches iteratively')
         parser.add_argument("-D", action="store_true",
                             help=f'Prompt for {deleted("deleting")} unmerged branches anyways')
+        parser.add_argument("-r", action="store_true",
+                            help=f'{deleted("Delete")} the remote branch as well')
         parser.set_defaults(func=self.handle)
 
     def handle(self, args):
         if args.iterate:
-            self.iterative_cleanup(args.D)
+            self.iterative_cleanup(args.D, args.r)
         elif args.branch is not None:
-            print("abrbr ", args.branch)
-            self.validate_and_cleanup(args.branch, False, args.D)
+            self.validate_and_cleanup(args.branch, iterate=False, delete_unmerged=args.D, delete_remote=args.r)
 
-    def validate_and_cleanup(self, branch, iterate, hard):
-        validation = self.validate(branch, hard)
-        if validation is not OK and validation is not NOT_MERGED:
-            return SKIP
+    def validate_and_cleanup(self, branch, iterate, delete_unmerged, delete_remote):
+        validation = self.validate(branch, delete_unmerged)
+        if validation is OK:
+            return self.cleanup(branch, iterate, False, False, delete_remote)
+        elif validation is NOT_MERGED:
+            return self.cleanup(branch, iterate, False, True, delete_remote)
+        elif validation is NOT_SYNCED:
+            return self.cleanup(branch, iterate, True, True, delete_remote)
         else:
-            print()
-            return self.cleanup(branch, iterate, (hard and validation == NOT_MERGED))
+            return SKIP
 
-    def cleanup(self, branch, iterate, delete_unmerged):
-        print(f'You are about to delete \'{warn(branch)} \' branch.')
+    def cleanup(self, branch, iterate, not_synced, delete_unmerged, delete_remote):
+        print(f'You are about to delete \'{warn(branch)}\' branch.')
         confirmation = confirm("Are you sure?", iterate)
         if confirmation == CANCEL:
             print(warn("Cleanup cancelled"))
@@ -59,19 +64,38 @@ class CleanupCli:
                 print(warn("Skipping branch"))
                 return SKIP
 
+        if not_synced:
+            print(f'The branch contains changes not in sync with the remote branch.')
+            confirmation = confirm(f'{error("Caution: Deleting this branch may lead to data loss!")} Delete anyways?', False)
+            if confirmation == NO:
+                print(warn("Skipping branch"))
+                return SKIP
+
         result = self.handler.delete(branch, delete_unmerged)
-        if result:
-            print("Branch deleted")
-            return DONE
-        else:
+
+        if not result:
             print("Error deleting branch")
             return SKIP
+        else:
+            print("Branch deleted")
 
-    def iterative_cleanup(self, hard):
+        if self.handler.has_remote(branch) and delete_remote:
+            confirmation = confirm(f'Are you sure you want to {deleted("delete")} the remote branch?', False)
+            if confirmation == YES:
+                result = self.handler.git.delete_remote(branch)
+                if result:
+                    print("Remote branch deleted")
+                else:
+                    print("There was an error deleting the remote branch")
+            else:
+                print("Remote branch not deleted")
+        return DONE
+
+    def iterative_cleanup(self, hard, remote):
         cleaned = []
         skipped = []
         for branch in self.handler.get_branches():
-            result = self.validate_and_cleanup(branch, True, hard)
+            result = self.validate_and_cleanup(branch, True, hard, remote)
             if result is BREAK:
                 break
             elif result is SKIP:
@@ -106,6 +130,12 @@ class CleanupCli:
             case Validation.IMPORTANT:
                 print(f"Skipping {Important} branch: {important(branch)}")
                 return SKIP
+            case Validation.NOT_SYNC_WITH_REMOTE:
+                if hard_enabled:
+                    return NOT_SYNCED
+                else:
+                    print(f"Skipping branch: {branch} - not in sync with remote. Use -D option to delete anyways")
+                    return SKIP
             case Validation.NOT_MERGED_TO_MAIN:
                 if hard_enabled:
                     return NOT_MERGED
