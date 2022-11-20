@@ -33,6 +33,9 @@ def error(msg): return colored(msg, 'red')
 def warn(msg): return colored(msg, 'yellow')
 
 
+def gray(msg): return colored(msg, 'gray')
+
+
 def apply_color(branch, tags, is_deleted, curr=None):
     if is_deleted:
         return deleted(branch)

@@ -1,7 +1,7 @@
 
 import jsonpickle
 
-from data.models import StorageModel, Tags
+from data.models import StorageModel
 
 PATH_STORAGE2 = "/.git/gits2"
 
@@ -25,7 +25,7 @@ class Storage2:
                     self.__cache__ = data
                     return data
             except Exception:
-                return StorageModel(Tags())
+                return StorageModel()
         else:
             return self.__cache__
 

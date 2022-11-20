@@ -1,6 +1,7 @@
 
 from enum import Enum
 
+from data.models import Tags
 from data.store import Storage2
 from tools.githelper import GitHelper
 
@@ -16,8 +17,11 @@ class TagsStorage:
     def __init__(self, storage: Storage2):
         self.storage = storage
 
-    def load_tags(self):
-        return self.storage.load_model().tags
+    def load_tags(self) -> Tags:
+        tags = self.storage.load_model().tags
+        if tags is None:
+            tags = Tags()
+        return tags
 
     def store_tags(self, tags):
         data = self.storage.load_model()

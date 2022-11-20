@@ -1,6 +1,6 @@
 
 class Tags(object):
-    def __init__(self, main=None, work=None, important=None):
+    def __init__(self, main: str = None, work: [] = None, important: [] = None):
         self.main = main
         self.work = work
         self.important = important
@@ -21,10 +21,41 @@ class Checkout(object):
             and self.checkouts == other.checkouts
 
 
+class Note(object):
+    def __init__(self, text: str, branch: str, created_at, archived_at=None):
+        self.text = text
+        self.branch = branch
+        self.created_at = created_at
+        self.archived_at = archived_at
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) \
+            and self.text == other.text \
+            and self.branch == other.branch \
+            and self.created_at == other.created_at \
+            and self.archived_at == other.archived_at
+
+    def __hash__(self):
+        return hash((self.text, self.branch, self.created_at, self.archived_at))
+
+    def __str__(self):
+        return f'{self.text}, {self.branch}, {self.created_at}, {self.archived_at} '
+
+
+class Notes(object):
+    def __init__(self, notes: [] = None):
+        self.notes = notes
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) \
+            and self.notes == other.notes
+
+
 class StorageModel:
-    def __init__(self, tags: Tags = None, checkouts: Checkout = None):
+    def __init__(self, tags: Tags = None, checkouts: Checkout = None, notes: Notes = None):
         self.tags = tags
         self.checkouts = checkouts
+        self.notes = notes
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) \

@@ -9,6 +9,8 @@ from cli.tasks_cli import TasksCli
 from features.checkout2.checkout import CheckoutHandler, CheckoutStore
 from features.cleanup.cleanup_cli import CleanupCli
 from features.cleanup.cleanup_handler import CleanupHandler
+from features.notes.notes_cli import NotesCli
+from features.notes.notes_handler import NotesHandler, NotesStore
 from features.overview_cli import OverviewCli
 from data.store import Storage2
 from features.tags.tags import TagsStorage, TagsHandler
@@ -56,6 +58,9 @@ class Gits:
         cleanup_handler = CleanupHandler(git, tags_handler)
         self.cleanup_cli = CleanupCli(cleanup_handler)
 
+        notes_handler = NotesHandler(store=NotesStore(storage2), git=git)
+        self.notes_cli = NotesCli(notes_handler)
+
     def main(self):
         parser = argparse.ArgumentParser(description='Keep track of work when working on multiple branches')
         parser.add_argument("-o", "--overview", action="store_true", help="List local branches with additional data")
@@ -65,7 +70,7 @@ class Gits:
 
         self.checkout_cli.add_subparser(subparsers)
         self.work_cli.add_subparser(subparsers)
-
+        self.notes_cli.add_subparser(subparsers)
         self.tasks_cli.add_subparser(subparsers)
         self.tags_cli.add_subparser(subparsers)
         self.cleanup_cli.add_subparser(subparsers)
