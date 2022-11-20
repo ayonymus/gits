@@ -5,20 +5,17 @@ import sys
 
 import colorama
 
-from cli.tasks_cli import TasksCli
+from data.store import Storage2
 from features.checkout2.checkout import CheckoutHandler, CheckoutStore
 from features.cleanup.cleanup_cli import CleanupCli
 from features.cleanup.cleanup_handler import CleanupHandler
 from features.notes.notes_cli import NotesCli
 from features.notes.notes_handler import NotesHandler, NotesStore
 from features.overview_cli import OverviewCli
-from data.store import Storage2
 from features.tags.tags import TagsStorage, TagsHandler
 from features.tags.tags_cli import TagsCli
-from features.taskhandler import TaskHandler
 from features.work.work import WorkHandler
 from tools.githelper import GitHelper
-from tools.storage import Storage
 
 colorama.init()
 
@@ -33,11 +30,6 @@ class Gits:
 
     def __init__(self):
         git = GitHelper()
-        storage = Storage(git.work_dir())
-
-        tasks = TaskHandler(storage)
-
-        self.tasks_cli = TasksCli(git, tasks)
 
         storage2 = Storage2(git.work_dir())
         tags = TagsStorage(storage2)
@@ -71,7 +63,6 @@ class Gits:
         self.checkout_cli.add_subparser(subparsers)
         self.work_cli.add_subparser(subparsers)
         self.notes_cli.add_subparser(subparsers)
-        self.tasks_cli.add_subparser(subparsers)
         self.tags_cli.add_subparser(subparsers)
         self.cleanup_cli.add_subparser(subparsers)
         args = parser.parse_args()
