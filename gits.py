@@ -35,17 +35,16 @@ class Gits:
         tags = TagsStorage(storage2)
         tags_handler = TagsHandler(tags, git)
         self.tags_cli = TagsCli(tags_handler)
+        self.overview = OverviewCli(git, tags_handler)
 
         checkout_store = CheckoutStore(storage2)
         checkout_handler = CheckoutHandler(checkout_store, git, tags_handler)
         from features.checkout2.checkout_cli import CheckoutCli
-        self.checkout_cli = CheckoutCli(checkout_handler)
+        self.checkout_cli = CheckoutCli(checkout_handler, self.overview)
 
         work_handler = WorkHandler(tags_handler, checkout_handler, git)
         from features.work.work_cli import WorkCli
         self.work_cli = WorkCli(work_handler)
-
-        self.overview = OverviewCli(git, tags_handler)
 
         cleanup_handler = CleanupHandler(git, tags_handler)
         self.cleanup_cli = CleanupCli(cleanup_handler)

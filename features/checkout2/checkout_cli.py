@@ -1,12 +1,14 @@
 from cli.selector import ListSelector
 from features.checkout2.checkout import CheckoutHandler
 from cli.color import Main, Work, Deleted, apply_color
+from features.overview_cli import OverviewCli
 
 
 class CheckoutCli:
 
-    def __init__(self, handler: CheckoutHandler):
+    def __init__(self, handler: CheckoutHandler, overview: OverviewCli):
         self.handler = handler
+        self.overview = overview
 
     def add_subparser(self, subparsers):
         parser = subparsers.add_parser('checkout',
@@ -57,5 +59,6 @@ class CheckoutCli:
 
     def select(self):
         branches = self.handler.git.branches_str()
-        selector = ListSelector(branches, lambda i: self.print_message(self.handler.checkout(branches[i])))
+        fancy = self.overview.data_as_string()
+        selector = ListSelector(fancy, lambda i: self.print_message(self.handler.checkout(branches[i])))
         selector.start()
