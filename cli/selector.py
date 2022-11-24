@@ -25,7 +25,8 @@ class ListSelector:
         len_data = len(self.data)
         if term_list_height > len_data:
             return len_data
-        return term_list_height
+        else:
+            return term_list_height
 
     def make_room(self):
         for i in range(1, self.display_height()):
@@ -111,7 +112,7 @@ class ListSelector:
 
 
 def main():
-    data = [f"Item {i}                                                                             " for i in range(5)]
+    data = [f"Item {i}                                                                             " for i in range(15)]
 
     listener = lambda i: print(f'selected: {i}')
 

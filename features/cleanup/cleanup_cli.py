@@ -1,4 +1,5 @@
 from cli.color import deleted, Main, work, Important, important, Work, error, warn
+from cli.selector import ListSelector
 from cli.tools import YES, NO, CANCEL, confirm
 from features.cleanup.cleanup_handler import CleanupHandler, Validation
 
@@ -24,6 +25,8 @@ class CleanupCli:
                                  f'Required to set up a {Main} branch in order to detect unmerged changes')
         parser.add_argument("--iterate", action="store_true",
                             help=f'{deleted("Delete")} branches iteratively')
+        parser.add_argument("-s", "--select", action="store_true",
+                            help=f'{deleted("Delete")} branch selected from list')
         parser.add_argument("-D", action="store_true",
                             help=f'Prompt for {deleted("deleting")} unmerged branches anyways')
         parser.add_argument("-r", action="store_true",
@@ -35,6 +38,8 @@ class CleanupCli:
             self.iterative_cleanup(args.D, args.r)
         elif args.branch is not None:
             self.validate_and_cleanup(args.branch, iterate=False, delete_unmerged=args.D, delete_remote=args.r)
+        elif args.select is not None:
+            self.select(delete_unmerged=args.D, delete_remote=args.r)
 
     def validate_and_cleanup(self, branch, iterate, delete_unmerged, delete_remote):
         validation = self.validate(branch, delete_unmerged)
@@ -46,6 +51,11 @@ class CleanupCli:
             return self.cleanup(branch, iterate, True, True, delete_remote)
         else:
             return SKIP
+
+    def select(self, delete_unmerged, delete_remote):
+        branches = self.handler.get_branches()
+        selector = ListSelector(branches, lambda i: self.validate_and_cleanup(branches[i], False, delete_unmerged, delete_remote))
+        selector.start()
 
     def cleanup(self, branch, iterate, not_synced, delete_unmerged, delete_remote):
         print(f'You are about to delete \'{warn(branch)}\' branch.')
