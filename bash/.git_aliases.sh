@@ -9,7 +9,7 @@ alias gita="cat $DIR/.git_aliases.sh"
 ## regular git commands
 alias add="git add"
 alias adda="git add ."
-alias br="git branch"
+alias br="git branch --sort=-committerdate"
 alias com="git commit"
 alias coma="git commit --amend"
 alias coman="git commit --amend --no-edit"
