@@ -3,8 +3,6 @@
 import argparse
 import sys
 
-import colorama
-
 from data.store import Storage2
 from features.checkout2.checkout import CheckoutHandler, CheckoutStore
 from features.cleanup.cleanup_cli import CleanupCli
@@ -16,8 +14,6 @@ from features.tags.tags import TagsStorage, TagsHandler
 from features.tags.tags_cli import TagsCli
 from features.work.work import WorkHandler
 from tools.githelper import GitHelper
-
-colorama.init()
 
 
 class Gits:
