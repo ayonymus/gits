@@ -39,7 +39,10 @@ class Note(object):
         return hash((self.text, self.branch, self.created_at, self.archived_at))
 
     def __str__(self):
-        return f'{self.text}, {self.branch}, {self.created_at}, {self.archived_at} '
+        return f'{self.text}, {self.branch}, {self.created_at}, {self.archived_at}'
+
+    def short_str(self):
+        return f'{self.created_at} [{self.branch}] {self.text}'
 
 
 class Notes(object):

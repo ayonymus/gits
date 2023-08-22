@@ -1,11 +1,14 @@
+from cli.selector import ListSelector
 from features.checkout2.checkout import CheckoutHandler
 from cli.color import Main, Work, Deleted, apply_color
+from features.overview_cli import OverviewCli
 
 
 class CheckoutCli:
 
-    def __init__(self, handler: CheckoutHandler):
+    def __init__(self, handler: CheckoutHandler, overview: OverviewCli):
         self.handler = handler
+        self.overview = overview
 
     def add_subparser(self, subparsers):
         parser = subparsers.add_parser('checkout',
@@ -16,6 +19,8 @@ class CheckoutCli:
                             help="Create new branch, check out, and add to checkout logs")
         parser.add_argument("--suffix", type=str,
                             help="Create and check out branch with current branches name plus _suffix")
+        parser.add_argument("-s", "--select", action="store_true",
+                            help=f'Select branch from list')
         parser.add_argument("-m", "--main", action="store_true", help=f"Check out {Main} branch")
         parser.add_argument("-w", "--work", action="store_true", help=f"Check out {Work} branch")
         parser.add_argument("-p", "--prev", action="store_true", help=f"Check out previous branch")
@@ -29,6 +34,8 @@ class CheckoutCli:
             self.print_message(self.handler.checkout(args.checkout))
         elif args.branch:
             self.print_message(self.handler.checkout(args.branch, True))
+        elif args.select:
+            self.select()
         elif args.suffix:
             self.print_message(self.handler.checkout_suffix(args.suffix))
         elif args.main:
@@ -50,3 +57,8 @@ class CheckoutCli:
         for log in logs:
             print(f'{apply_color(log[0], tags, log[2])}, {Deleted if log[2] else ""}')
 
+    def select(self):
+        branches = self.handler.git.branches_str()
+        fancy = self.overview.data_as_string()
+        selector = ListSelector(fancy, lambda i: self.print_message(self.handler.checkout(branches[i])))
+        selector.start()

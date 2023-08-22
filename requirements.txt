@@ -1,0 +1,6 @@
+colorama
+termcolor
+jsonpickle
+gitpython
+tabulate
+mdutils

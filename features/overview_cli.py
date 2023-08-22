@@ -28,6 +28,18 @@ class OverviewCli:
             print("Fetch...")
             self.git.fetch()
 
+        data = self.assemble_data()
+
+        print(tabulate(data, headers=["State", "Branch"]))
+        print()
+        self.print_legend()
+
+    def data_as_string(self):
+        data = self.assemble_data()
+        as_str = [f'{d[0]}\t{d[1]}' for d in data]
+        return as_str
+
+    def assemble_data(self):
         tags = self.tags_handler.get_tags()
         main = tags.main
         cur = str(self.git.current_branch())
@@ -36,11 +48,8 @@ class OverviewCli:
         for i, branch in enumerate(self.git.branches_str()):
             upstream = self.upstream_status(branch, main)
             branch_colored = apply_color(branch, tags, False, cur)
-            data.append([branch_colored, upstream])
-
-        print(tabulate(data, headers=["Branch", "State"]))
-        print()
-        self.print_legend()
+            data.append([upstream, branch_colored])
+        return data
 
     def print_legend(self):
         print(f"{Current} {Main} {Work} {Important} Regular")
