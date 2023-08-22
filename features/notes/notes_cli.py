@@ -1,8 +1,7 @@
 from tabulate import tabulate
 
 from cli.color import deleted, warn
-from cli.selector import ListSelector
-from cli.tools import confirm, is_valid_index
+from cli.tools import confirm, is_valid_index, is_nix
 from features.notes.notes_handler import NotesHandler
 
 
@@ -26,7 +25,8 @@ class NotesCli:
         parser.add_argument("-d", "--delete", nargs='?', const=-1, type=int, help=f"{deleted('Delete')} a note by idx")
         parser.add_argument("-m", "--move", nargs=2, type=int, help="Remove a note by index. idx1: source, idx2 target")
         parser.add_argument("--movetop", nargs=1, type=int, help="Move note to top of list")
-        parser.add_argument("-s", "--select", action="store_true",
+        if is_nix():
+            parser.add_argument("-s", "--select", action="store_true",
                             help=f'Select note from list. Combine with -b, -l, -a, -d')
         parser.add_argument("--export", action="store_true", help="Export notes to Notes.md")
         parser.set_defaults(func=self.handle)
@@ -69,7 +69,7 @@ class NotesCli:
     def select(self, args):
         note_objects, ids = self.handler.get_notes(args.logs, args.full, args.branch, args.group, args.archived)
         note_str = [note.short_str() for note in note_objects]
-
+        from cli.selector import ListSelector
         selector = ListSelector(note_str, lambda selected: self.handle_selection(ids[note_objects[selected]], args.archive, args.delete))
         selector.start()
 

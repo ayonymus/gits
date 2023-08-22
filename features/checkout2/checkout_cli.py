@@ -1,4 +1,4 @@
-from cli.selector import ListSelector
+from cli.tools import is_nix
 from features.checkout2.checkout import CheckoutHandler
 from cli.color import Main, Work, Deleted, apply_color
 from features.overview_cli import OverviewCli
@@ -19,7 +19,8 @@ class CheckoutCli:
                             help="Create new branch with provided name, check out, and add to checkout logs")
         parser.add_argument("--suffix", type=str,
                             help="Create and check out branch with current branches name plus _suffix")
-        parser.add_argument("-s", "--select", action="store_true",
+        if is_nix():
+            parser.add_argument("-s", "--select", action="store_true",
                             help=f'Select branch from list')
         parser.add_argument("-m", "--main", action="store_true", help=f"Check out {Main} branch")
         parser.add_argument("-w", "--work", action="store_true", help=f"Check out {Work} branch")
@@ -62,5 +63,6 @@ class CheckoutCli:
     def select(self):
         branches = self.handler.git.branches_str()
         fancy = self.overview.data_as_string()
+        from cli.selector import ListSelector
         selector = ListSelector(fancy, lambda i: self.print_message(self.handler.checkout(branches[i])))
         selector.start()
