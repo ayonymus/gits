@@ -1,4 +1,4 @@
-
+import os
 
 NO = 0
 YES = 1
@@ -30,3 +30,7 @@ def dedup(ls):
 
 def is_valid_index(ls, index):
     return len(ls) > index
+
+
+def is_nix():
+    return os.name is not 'nt'

@@ -4,3 +4,4 @@ jsonpickle
 gitpython
 tabulate
 mdutils
+blessings
