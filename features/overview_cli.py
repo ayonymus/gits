@@ -28,18 +28,18 @@ class OverviewCli:
             print("Fetch...")
             self.git.fetch()
 
-        data = self.assemble_data()
+        data = self.__assemble_data__()
 
         print(tabulate(data, headers=["State", "Branch"]))
         print()
         self.print_legend()
 
     def data_as_string(self):
-        data = self.assemble_data()
+        data = self.__assemble_data__()
         as_str = [f'{d[0]}\t{d[1]}' for d in data]
         return as_str
 
-    def assemble_data(self):
+    def __assemble_data__(self):
         tags = self.tags_handler.get_tags()
         main = tags.main
         cur = str(self.git.current_branch())

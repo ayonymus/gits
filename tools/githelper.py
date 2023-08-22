@@ -1,6 +1,7 @@
 import git
 from git import Repo
 import os
+import re
 
 
 class GitHelper:
@@ -17,7 +18,7 @@ class GitHelper:
         try:
             self.repo = Repo(os.getcwd(), search_parent_directories=True)
         except git.exc.InvalidGitRepositoryError:
-            print('Script should be called from root directory of a git repository. Exit')
+            print('Script should be started from the root directory of a git repository. Exit')
             exit(1)
 
     def is_existing_branch(self, branch):
@@ -42,6 +43,13 @@ class GitHelper:
 
     def branches_str(self):
         return [x.name for x in self.branches()]
+
+    def remote_branches(self):
+        branches = self.repo.git.branch('--remote', '--sort=-committerdate')  # .strip('*origin/').split('\n')
+        return list(filter(None, re.split(r'\s*origin/', branches)))
+
+    def remotes(self):
+        return self.repo.remotes
 
     def checkout(self, branch, new_branch=False):
         try:
@@ -90,6 +98,3 @@ class GitHelper:
         remoteSha = git.Git().execute("git rev-parse origin/" + branch, shell=True, with_stdout=True)
         localSha = git.Git().execute("git rev-parse " + branch, shell=True, with_stdout=True)
         return remoteSha == localSha
-
-
-
