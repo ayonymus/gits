@@ -32,7 +32,9 @@ class CheckoutHandler:
         self.tags = tags
 
     def checkout(self, branch, new_branch=False):
-        if self.git.checkout(branch, new_branch):
+        if branch == '.':
+            self.git.checkout(branch, False)
+        elif self.git.checkout(branch, new_branch):
             check_model: Checkout = self.store.load_checkouts()
             checkouts = check_model.checkouts
             if checkouts is None or len(checkouts) == 0:

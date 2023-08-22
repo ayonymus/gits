@@ -16,7 +16,7 @@ class CheckoutCli:
         parser.add_argument("checkout", nargs="?", type=str, default=None,
                             help="Check out branch and add to checkout history")
         parser.add_argument("-b", "--branch", type=str,
-                            help="Create new branch, check out, and add to checkout logs")
+                            help="Create new branch with provided name, check out, and add to checkout logs")
         parser.add_argument("--suffix", type=str,
                             help="Create and check out branch with current branches name plus _suffix")
         parser.add_argument("-s", "--select", action="store_true",
@@ -46,6 +46,8 @@ class CheckoutCli:
             self.print_message(self.handler.checkout_prev())
         elif args.logs:
             self.print_logs(args.logs, args.full)
+        else:
+            print("No argument provided")
 
     def print_message(self, branch):
         if branch is not None:

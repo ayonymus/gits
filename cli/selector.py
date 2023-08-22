@@ -1,7 +1,5 @@
-
 import os
 import sys
-import termios
 import tty
 
 from blessings import Terminal
@@ -36,7 +34,8 @@ class ListSelector:
     def show_data(self):
         if self.debug:
             with self.term.location(60, 0):
-                print(f'height: {self.term.height}, display height: {self.display_height()}, list height: {self.list_height()},selected: {self.selected}__, offset: {self.list_offset}_____')
+                print(
+                    f'height: {self.term.height}, display height: {self.display_height()}, list height: {self.list_height()},selected: {self.selected}__, offset: {self.list_offset}_____')
 
         for i in range(0, self.list_height()):
             idx = i + self.list_offset
@@ -65,29 +64,25 @@ class ListSelector:
         self.on_select(self.selected)
 
     def getkey(self):
-        old_settings = termios.tcgetattr(sys.stdin)
         tty.setcbreak(sys.stdin.fileno())
-        try:
-            while True:
-                b = os.read(sys.stdin.fileno(), 3).decode()
-                if len(b) == 3:
-                    k = ord(b[2])
-                else:
-                    k = ord(b)
-                key_mapping = {
-                    127: 'backspace',
-                    10: 'return',
-                    32: 'space',
-                    9:  'tab',
-                    27: 'esc',
-                    65: 'up',
-                    66: 'down',
-                    67: 'right',
-                    68: 'left'
-                }
-                return key_mapping.get(k, chr(k))
-        finally:
-            termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
+        while True:
+            b = os.read(sys.stdin.fileno(), 3).decode()
+            if len(b) == 3:
+                k = ord(b[2])
+            else:
+                k = ord(b)
+            key_mapping = {
+                127: 'backspace',
+                10: 'return',
+                32: 'space',
+                9: 'tab',
+                27: 'esc',
+                65: 'up',
+                66: 'down',
+                67: 'right',
+                68: 'left'
+            }
+            return key_mapping.get(k, chr(k))
 
     def start(self):
         self.make_room()
@@ -121,7 +116,5 @@ def main():
     ls.start()
 
 
-
 if __name__ == '__main__':
     main()
-
