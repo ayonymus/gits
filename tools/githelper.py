@@ -37,11 +37,8 @@ class GitHelper:
     def current_branch(self):
         return self.repo.active_branch.name
 
-    def branches(self):
-        return self.repo.branches
-
     def branches_str(self):
-        return [x.name for x in self.branches()]
+        return self.repo.git.branch('--sort=-committerdate', '--format=%(refname)').replace('refs/heads/', '').split('\n')
 
     def checkout(self, branch, new_branch=False):
         try:
@@ -92,4 +89,11 @@ class GitHelper:
         return remoteSha == localSha
 
 
+def main():
+    helper = GitHelper()
+    print(helper.branches_str())
+
+
+if __name__ == '__main__':
+    main()
 
