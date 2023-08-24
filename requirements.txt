@@ -4,3 +4,4 @@ gitpython
 tabulate
 mdutils
 blessings
+requests

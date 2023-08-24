@@ -46,6 +46,7 @@ class GitHelper:
 
     def remote_branches(self):
         branches = self.repo.git.branch('--remote', '--sort=-committerdate')  # .strip('*origin/').split('\n')
+        branches = re.sub(r'\s*origin/HEAD.*', '', branches)
         return list(filter(None, re.split(r'\s*origin/', branches)))
 
     def remotes(self):
@@ -90,7 +91,7 @@ class GitHelper:
 
     def fetch(self):
         for remote in self.repo.remotes:
-            remote.fetch()
+            remote.fetch(prune=True)
 
     def is_pushed(self, branch):
         if not self.has_remote(branch):
@@ -98,3 +99,15 @@ class GitHelper:
         remoteSha = git.Git().execute("git rev-parse origin/" + branch, shell=True, with_stdout=True)
         localSha = git.Git().execute("git rev-parse " + branch, shell=True, with_stdout=True)
         return remoteSha == localSha
+
+    def get_origin_url(self):
+        return self.repo.remotes.origin.url
+
+
+def main():
+    gith = GitHelper()
+    print(gith.get_origin_url())
+
+
+if __name__ == '__main__':
+    main()

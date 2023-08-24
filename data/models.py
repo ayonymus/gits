@@ -54,13 +54,26 @@ class Notes(object):
             and self.notes == other.notes
 
 
-class StorageModel:
-    def __init__(self, tags: Tags = None, checkouts: Checkout = None, notes: Notes = None):
-        self.tags = tags
-        self.checkouts = checkouts
-        self.notes = notes
+class Devops(object):
+    def __init__(self, provider=None, config=None):
+        self.provider = provider
+        self.config = config
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) \
-               and self.tags == other.tags \
-               and self.checkouts == other.checkouts
+            and self.provider == other.provider \
+            and self.config == other.config
+
+
+class StorageModel:
+    def __init__(self, tags: Tags = None, checkouts: Checkout = None, notes: Notes = None, devops: Devops = None):
+        self.tags = tags
+        self.checkouts = checkouts
+        self.notes = notes
+        self.devops = devops
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) \
+            and self.tags == other.tags \
+            and self.checkouts == other.checkouts \
+            and self.devops == other.devops

@@ -11,6 +11,7 @@ from features.cleanup.cleanup_handler import CleanupHandler
 from features.notes.notes_cli import NotesCli
 from features.notes.notes_handler import NotesHandler, NotesStore
 from features.overview_cli import OverviewCli
+from features.review.devops import DevOpsHandler
 from features.review.review_cli import ReviewCli
 from features.review.review_handler import ReviewHandler
 from features.tags.tags import TagsStorage, TagsHandler
@@ -49,7 +50,9 @@ class Gits:
         notes_handler = NotesHandler(store=NotesStore(storage2), git=git)
         self.notes_cli = NotesCli(notes_handler)
 
-        self.review_cli = ReviewCli(ReviewHandler(git=git, tags=tags_handler))
+        self.review_cli = ReviewCli(review_handler=ReviewHandler(
+            git=git, tags=tags_handler, devops=DevOpsHandler(storage2, git))
+        )
 
     def main(self):
         parser = argparse.ArgumentParser(description='Keep track of work when working on multiple branches')

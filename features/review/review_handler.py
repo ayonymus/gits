@@ -1,16 +1,21 @@
+from features.review.devops import DevOpsHandler
 from features.tags.tags import TagsHandler
 from tools.githelper import GitHelper
 
 
 class ReviewHandler:
 
-    def __init__(self, git: GitHelper, tags: TagsHandler):
+    def __init__(self, git: GitHelper, tags: TagsHandler, devops: DevOpsHandler):
         self.git = git
         self.tags = tags
+        self.devops = devops
 
     def get_remotes(self):
         self.git.fetch()
         return self.git.remote_branches()
+
+    def get_prs(self):
+        return self.devops.get_prs()
 
 
 def main():
@@ -18,10 +23,6 @@ def main():
         git=GitHelper(),
         tags=None
     )
-    handler.get_remotes()
-    print(handler.git.remotes())
-    print(handler.git.branches())
-    print(handler.git.branches_str())
 
 
 if __name__ == '__main__':
