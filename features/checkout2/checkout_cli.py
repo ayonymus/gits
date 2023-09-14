@@ -35,7 +35,7 @@ class CheckoutCli:
             self.print_message(self.handler.checkout(args.checkout))
         elif args.branch:
             self.print_message(self.handler.checkout(args.branch, True))
-        elif args.select:
+        elif is_nix() and args.select:
             self.select()
         elif args.suffix:
             self.print_message(self.handler.checkout_suffix(args.suffix))

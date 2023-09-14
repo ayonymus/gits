@@ -35,7 +35,7 @@ class NotesCli:
         if args.add:
             branch = self.handler.add_new_note(args.add, args.branch)
             print(f'Note added to {branch}')
-        elif args.select:
+        elif is_nix() and args.select:
             self.select(args)
         elif args.archive:
             self.archive(args.archive[0])

@@ -90,7 +90,8 @@ class DevOpsHandler:
         if response.status_code == 200:
             results = []
             for pr in response.json()['value']:
-                id = pr['pullRequestId']
+                id = pr['pullRequestId'
+                ]
                 url = f'{web_url}/_git/{repo_name}/pullrequest/{id}'
                 results.append((pr['title'],
                                 pr['sourceRefName'].replace('refs/heads/', ''),

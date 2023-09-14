@@ -38,7 +38,7 @@ class CleanupCli:
             self.iterative_cleanup(args.D, args.r)
         elif args.branch is not None:
             self.validate_and_cleanup(args.branch, iterate=False, delete_unmerged=args.D, delete_remote=args.r)
-        elif args.select is not None and is_nix():
+        elif is_nix() and args.select is not None:
             self.select(delete_unmerged=args.D, delete_remote=args.r)
 
     def validate_and_cleanup(self, branch, iterate, delete_unmerged, delete_remote):
