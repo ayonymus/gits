@@ -42,11 +42,10 @@ class GitHelper:
         return self.repo.branches
 
     def branches_str(self):
-        return [x.name for x in self.branches()]
+        return self.repo.git.branch("--list", "--sort=-committerdate", '--format=%(refname:short)').split('\n')
 
     def remote_branches(self):
-        branches = self.repo.git.branch('--remote', '--sort=-committerdate')  # .strip('*origin/').split('\n')
-        branches = re.sub(r'\s*origin/HEAD.*', '', branches)
+        branches = self.repo.git.branch('--remote', '--sort=-committerdate', '--format=%(refname:short)')
         return list(filter(None, re.split(r'\s*origin/', branches)))
 
     def remotes(self):
@@ -106,8 +105,6 @@ class GitHelper:
 
 def main():
     gith = GitHelper()
-    print(gith.get_origin_url())
-
 
 if __name__ == '__main__':
     main()

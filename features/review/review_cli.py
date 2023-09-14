@@ -19,7 +19,7 @@ class ReviewCli:
         parser.add_argument("-p", "--pullrequests", action="store_true",
                             help="Show pull requests")
         parser.add_argument("--configure", nargs="+", type=str,
-                            help="Configure devops server: [azure|github]")
+                            help="Configure devops server: [azure {PAT} | github]")
         if is_nix():
             parser.add_argument("-s", "--select", action="store_true",
                                 help=f'Select branch to review from list')
@@ -42,8 +42,8 @@ class ReviewCli:
 
     def __print_prs__(self):
         prs = self.review_handler.get_prs()
-        data = [(pr[1], textwrap.shorten(pr[0], 25), pr[5])for pr in prs]
-        print(tabulate(data, headers=["Branch", "Title", "Weburl"]))
+        data = [(idx, pr[1], textwrap.shorten(pr[0], 25), pr[5]) for idx, pr in enumerate(prs)]
+        print(tabulate(data, headers=["Idx", "Branch", "Title", "Weburl"]))
 
     def __config_devops__(self, configure):
         self.review_handler.devops.configure(configure[0], configure[1])

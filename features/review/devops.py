@@ -1,4 +1,3 @@
-import base64
 
 import requests
 
@@ -59,7 +58,6 @@ class DevOpsHandler:
         self.store.store_devops(devops)
         print(f'Project url: {project_url}')
         print(f'Repository name: {repo_name}')
-        print(f'Pr url: {pr_url}')
 
     def __configure_github__(self):
         print("Not implemented yet")
@@ -70,6 +68,8 @@ class DevOpsHandler:
         # TODO not configured yet?
         if devops.provider == AZURE:
             return self.__get_azure_prs__(devops.config)
+        else:
+            return None
 
     def __get_azure_prs__(self, config):
         pat = config['token']
@@ -89,7 +89,7 @@ class DevOpsHandler:
                                 url))
             return results
         elif response.status_code != 401:
-            print("Personal access token not accepted")
+            print("401: Personal access token not accepted.")
             exit(1)
         else:
             print("Unexpected response")
