@@ -1,6 +1,7 @@
 import git
 from git import Repo
 import os
+import re
 
 
 class GitHelper:
@@ -17,7 +18,7 @@ class GitHelper:
         try:
             self.repo = Repo(os.getcwd(), search_parent_directories=True)
         except git.exc.InvalidGitRepositoryError:
-            print('Script should be called from root directory of a git repository. Exit')
+            print('Script should be started from the root directory of a git repository. Exit')
             exit(1)
 
     def is_existing_branch(self, branch):
@@ -38,6 +39,13 @@ class GitHelper:
         return self.repo.active_branch.name
 
     def branches_str(self):
+        return self.repo.git.branch("--list", "--sort=-committerdate", '--format=%(refname:short)').split('\n')
+
+    def remote_branches(self):
+        branches = self.repo.git.branch('--remote', '--sort=-committerdate', '--format=%(refname:short)')
+        return list(filter(None, re.split(r'\s*origin/', branches)))
+
+    def remotes(self):
         return self.repo.git.branch('--sort=-committerdate', '--format=%(refname)').replace('refs/heads/', '').split('\n')
 
     def checkout(self, branch, new_branch=False):
@@ -79,7 +87,7 @@ class GitHelper:
 
     def fetch(self):
         for remote in self.repo.remotes:
-            remote.fetch()
+            remote.fetch(prune=True)
 
     def is_pushed(self, branch):
         if not self.has_remote(branch):
@@ -88,12 +96,13 @@ class GitHelper:
         localSha = git.Git().execute("git rev-parse " + branch, shell=True, with_stdout=True)
         return remoteSha == localSha
 
+    def get_origin_url(self):
+        return self.repo.remotes.origin.url
+
 
 def main():
     helper = GitHelper()
-    print(helper.branches_str())
 
 
 if __name__ == '__main__':
     main()
-
