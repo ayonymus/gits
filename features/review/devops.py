@@ -36,7 +36,7 @@ class DevOpsHandler:
         if provider == AZURE:
             self.__configure_azure__(token)
         elif provider == GITHUB:
-            self.__configure_github__()
+            self.__configure_github__(token)
         else:
             print("Invalid argument")
             exit(1)
@@ -59,21 +59,32 @@ class DevOpsHandler:
         print(f'Project url: {project_url}')
         print(f'Repository name: {repo_name}')
 
-    def __configure_github__(self):
-        print("Not implemented yet")
-        pass
+    def __configure_github__(self, token):
+        remote = self.git.get_origin_url()
+        github, repo = remote.split(':')
+        config = {
+            'repo': repo.removesuffix('.git'),
+            'token': token
+        }
+        devops = Devops()
+        devops.provider = GITHUB
+        devops.config = config
+        self.store.store_devops(devops)
+        print(f"Repository name: {config['repo']}")
 
     def get_prs(self):
         devops = self.store.load_devops()
         # TODO not configured yet?
         if devops.provider == AZURE:
             return self.__get_azure_prs__(devops.config)
+        if devops.provider == GITHUB:
+            return self.__get_github_prs__(devops.config)
         else:
             return None
 
     def __get_azure_prs__(self, config):
         pat = config['token']
-        response = requests.get(url=config['pr_url'], auth=(pat, ''))
+        response = requests.get(url=config['pr_url'], auth=(pat))
         web_url = config['url']
         repo_name = config['repo_name']
         if response.status_code == 200:
@@ -88,6 +99,33 @@ class DevOpsHandler:
                                 pr['creationDate'],
                                 url))
             return results
+        elif response.status_code != 401:
+            print("401: Personal access token not accepted.")
+            exit(1)
+        else:
+            print("Unexpected response")
+            exit(1)
+
+    def __get_github_prs__(self, config):
+        pat = config['token']
+        url = ('https://api.github.com/repos/%s/%s' % (config['repo'], 'pulls'))
+        headers = {
+            "Accept": "application/vnd.github+json",
+            "Authorization": "Bearer " + pat,
+            "X-Github-Api-Version": "2022-11-28"
+        }
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            results = []
+            for pr in response.json():
+                results.append((pr['title'],
+                                pr['head']['ref'],
+                                pr['base']['ref'],
+                                pr['state'],
+                                pr['created_at'],
+                                pr['html_url']))
+            return results
+
         elif response.status_code != 401:
             print("401: Personal access token not accepted.")
             exit(1)
