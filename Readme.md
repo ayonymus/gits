@@ -1,17 +1,42 @@
 # gits
 
-A collection of scripts to simplify some of everyday tasks while working with `git` in a collaborative environment.
+A command line tool for simplifying collaboration with others. Tested on Linux, Mac and Windows.
+
+It is mostly geared at working with multiple branches and simplifying the code review process.
 
 
-## Usage
-Make sure you have `python 3` and `gitpython` installed.
+## Problem Statement
+Working in a high performance, very collaborative team comes with its own set of problems.
+Imagine you have a `main` branch and are working on a feature on `feature/newfeature`. A higher priority task comes in.
+You start working on it on `task/priority_task`. Now a bug comes in, and you do a quick fix on 
+`bug/fixing`. You also want to check out a branch to review a pull request more thoroughly. 
 
-Clone the project to your __linux__ or __mac__ machine, and create an `alias` to `.gits.py`.
-Alternatively, for easier use, make an alias to `bash/.gits_aliases` that already has a few short cuts.
+Now you end up with 5 different branches on your local repository, and you have to figure out what were you working on.
 
-Run `.gits.py` and see the available options.
+By using the `gits` script you can ease this problem.
 
-Some extra information about your work is stored in your project's `.git` folder.
+## Overview
+`gits --overview` gives a glance the status of all your local branches.
+
+## checkout
+Using `gits checkout <branch>` command instead of regular `git checkout` will also keep a log 
+of checked out branches in a more readable format than `git reflog`.
+You can also check out a branch from this branch log.
+
+You can also easily switch to special marked branches (`work` and `main`).
+
+## marked branches
+
+Currently, there are 3 markers handled:
+
+### main
+Mark the most important branch as main.
+ 
+### work
+
+###important
+
+
 
 
 ## Features
