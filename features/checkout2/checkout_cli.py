@@ -1,6 +1,6 @@
 from cli.tools import is_nix
 from features.checkout2.checkout import CheckoutHandler
-from cli.color import Main, Work, Deleted, apply_color
+from cli.color import Main, Work, Deleted, apply_color, work
 from features.overview_cli import OverviewCli
 
 
@@ -32,27 +32,29 @@ class CheckoutCli:
 
     def handle_checkout(self, args):
         if args.checkout is not None:
-            self.print_message(self.handler.checkout(args.checkout))
+            self.print_message(self.handler.checkout(args.checkout), "Could not check out branch")
         elif args.branch:
-            self.print_message(self.handler.checkout(args.branch, True))
+            self.print_message(self.handler.checkout(args.branch, True), "Could not check out branch")
         elif is_nix() and args.select:
             self.select()
         elif args.suffix:
-            self.print_message(self.handler.checkout_suffix(args.suffix))
+            self.print_message(self.handler.checkout_suffix(args.suffix), "Source branch name not found")
         elif args.main:
-            self.print_message(self.handler.checkout_main())
+            self.print_message(self.handler.checkout_main(), f"{Main} branch is not set")
         elif args.work:
-            self.print_message(self.handler.checkout_work())
+            self.print_message(self.handler.checkout_work(), f"{Work} branch is not set")
         elif args.prev:
-            self.print_message(self.handler.checkout_prev())
+            self.print_message(self.handler.checkout_prev(), f"No previous branch found")
         elif args.logs:
             self.print_logs(args.logs, args.full)
         else:
             print("No argument provided")
 
-    def print_message(self, branch):
+    def print_message(self, branch, error=""):
         if branch is not None:
-            print(f"Switched to branch '{branch}'")
+            print(f"Switched to {apply_color(branch, self.handler.tags.get_tags(), None)}")
+        else:
+            print(error)
 
     def print_logs(self, length, full):
         logs = self.handler.get_logs(length, full)
