@@ -18,7 +18,9 @@ By using the `gits` script you can ease this problem.
 
 ## Main Features
 ### Overview
-`gits --overview` gives a glance the status of all your local branches.
+`gits --overview` gives a glance the status of all your local branches, ordered by most recent commit.
+
+![overview.png](docs%2Foverview.png)
 
 ### checkout
 Using `gits checkout <branch>` command instead of regular `git checkout` will also keep a log 

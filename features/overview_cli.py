@@ -54,10 +54,10 @@ class OverviewCli:
     def print_legend(self):
         print(f"{Current} {Main} {Work} {Important} Regular")
         print(
-            f"{PUSHED} Sync with remote",
-            f"{UPSTREAM} Has remote",
-            f"{NO_UPSTREAM} No remote and not on {Main}",
-            f"{MERGED} Merged to {Main}")
+            f"{MERGED} Merged to {Main}",
+            f"{PUSHED} In sync with remote",
+            f"{UPSTREAM} Not in sync with remote",
+            f"{NO_UPSTREAM} No remote and not on {Main}")
 
     def upstream_status(self, branch, main):
         is_pushed = self.git.is_pushed(branch)
