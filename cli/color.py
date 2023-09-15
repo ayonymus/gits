@@ -44,18 +44,20 @@ def review(msg): return colored(msg + ' [Review] ', REVIEW)
 def apply_color(branch, tags, is_deleted, curr=None):
     if is_deleted:
         return deleted(branch)
+    result = branch
     if tags.main is not None and branch == tags.main:
-        if branch == curr:
-            return main_(branch) + current(' [Current] ')
-        else:
-            return main_(branch)
+        result = main_(branch)
     if tags.work is not None and branch == tags.work[0]:
-        return work(branch)
+        result = work(branch)
     if tags.important is not None and branch in tags.important:
-        return important(branch)
+        result = important(branch)
     if branch == curr:
-        return current(branch)
-    return branch
+        if result == '':
+            return current(branch)
+        else:
+            return f"{result} {current('[Current]')}"
+    else:
+        return result
 
 
 def __showcase_palette__():
