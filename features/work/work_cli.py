@@ -5,25 +5,26 @@ from features.work.work import WorkHandler
 class WorkCli:
 
     def __init__(self, handler: WorkHandler):
+        self.parser = None
         self.handler = handler
 
     def add_subparser(self, subparsers):
-        parser = subparsers.add_parser('work', help="Keep track of work")
-        parser.add_argument("current", nargs="?", type=str, default=None, help=f"Show current {Work} branch")
-        parser.add_argument("-s", "--setwork", action="store_true", help=f"Set current branch as {Work} branch") ## in tags
-        parser.add_argument("-c", "--checkout", action="store_true", help=f"Checkout current {Work} branch")     ## in checkout
-        parser.add_argument("-l", "--logs", nargs='?', const=10, type=int,
-                                 help=f"Show truncated {Work} branch logs, most recent first. Provide -f flag for full list.") ## in tags
-        parser.add_argument("-f", "--full", action="store_true", help="Use full log list.")
-        parser.set_defaults(func=self.handle)
+        self.parser = subparsers.add_parser('work', help="Keep track of work.")
+        self.parser.add_argument("current", nargs="?", type=str, default=None, help=f"Show current {Work} branch")
+        self.parser.add_argument("-c", "--checkout", action="store_true", help=f"Checkout current {Work} branch")
+        self.parser.add_argument("-l", "--logs", nargs='?', const=10, type=int,
+                                 help=f"Show truncated {Work} branch logs, most recent first. Provide -f flag for "
+                                      f"full list.")
+        self.parser.add_argument("-f", "--full", action="store_true", help="Use full log list.")
+        self.parser.set_defaults(func=self.handle)
 
     def handle(self, args):
-        if args.setwork:
-            self.set_work_branch()
-        elif args.checkout:
+        if args.checkout:
             self.checkout_work_branch()
         elif args.logs:
             self.show_logs(args.logs, args.full)
+        else:
+            self.parser.print_help()
 
     def set_work_branch(self):
         branch = self.handler.set_work()

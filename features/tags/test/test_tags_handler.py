@@ -44,6 +44,15 @@ class TestTagHandler(TestCase):
 
         verify(self.store).store_tags(Tags("one", ["two"], {"three"}))
 
+    def test_set_work_after_unset(self):
+        expected = Tags("one", [None, "four"], {"three"})
+        when(self.store).load_tags().thenReturn(expected)
+        when(self.git).current_branch().thenReturn("two")
+
+        self.handler.set_work()
+
+        verify(self.store).store_tags(Tags("one", ["two", "four"], {"three"}))
+
     def test_set_work_existing(self):
         expected = Tags("one", ["two"], {"three"})
         when(self.store).load_tags().thenReturn(expected)
@@ -89,3 +98,20 @@ class TestTagHandler(TestCase):
 
         verify(self.store).store_tags(Tags("one", "two", {"three"}))
 
+    def test_unset_important(self):
+        expected = Tags("one", "two",  {"three", "four"})
+        when(self.store).load_tags().thenReturn(expected)
+        when(self.git).current_branch().thenReturn("four")
+
+        self.handler.unset()
+
+        verify(self.store).store_tags(Tags("one", "two", {"three"}))
+
+    def test_unset_work(self):
+        expected = Tags("one", ["two"],  {"three", "four"})
+        when(self.store).load_tags().thenReturn(expected)
+        when(self.git).current_branch().thenReturn("two")
+
+        self.handler.unset()
+
+        verify(self.store).store_tags(Tags("one", [None, "two"], {"three", "four"}))

@@ -49,6 +49,8 @@ class TagsHandler:
         tags = self.store.load_tags()
         if tags.work is None:
             tags.work = [current]
+        elif tags.work[0] is None:
+            tags.work[0] = current
         elif tags.work[0] != current:
             tags.work.insert(0, current)
         self.store.store_tags(tags)
@@ -66,3 +68,12 @@ class TagsHandler:
 
     def get_tags(self):
         return self.store.load_tags()
+
+    def unset(self):
+        current = self.git.current_branch()
+        tags: Tags = self.store.load_tags()
+        if tags.work is not None and current == tags.work[0]:
+            tags.work.insert(0, None)
+        if tags.important is not None and current in tags.important:
+            tags.important.discard(current)
+        self.store.store_tags(tags)

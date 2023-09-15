@@ -1,37 +1,38 @@
 from cli.tools import YES, confirm
 from data.models import Tags
-from cli.color import Main, Work, Important, Current
+from cli.color import Main, Work, Important, Current, work, main_
 from features.tags.tags import TagsHandler
 
 
 class TagsCli:
 
     def __init__(self, tags: TagsHandler):
+        self.parser = None
         self.tags = tags
 
     def add_subparser(self, subparser):
-        parser = subparser.add_parser("tags", help="Manage special and custom tags for branches")
-        parser.add_argument("--setmain", action="store_true",
-                            help=f"Set {Current} branch the {Main} branch")
-        parser.add_argument("--setwork", action="store_true",
-                            help=f"Set {Current} branch the {Work} branch")
-        parser.add_argument("-l", "--worklogs", action="store_true", help=f"Show {Work} branch logs")
-        parser.add_argument("-i", "--important", action="store_true",
-                            help=f"Mark {Current} branch as {Important} (won't be cleared)")
-
-        parser.set_defaults(func=self.handle)
+        self.parser = subparser.add_parser("mark", help="Manage branch markings")
+        self.parser.add_argument("-w", "--work", action="store_true",
+                                 help=f"Mark {Current} branch the {Work} branch")
+        self.parser.add_argument("-i", "--important", action="store_true",
+                                 help=f"Mark {Current} branch as {Important} (won't be cleared)")
+        self.parser.add_argument("--main", action="store_true",
+                                 help=f"Mark {Current} branch the {Main} branch")
+        self.parser.add_argument("--unset", action="store_true",
+                                 help=f"Unset current branch {Work} or {Important} mark.")
+        self.parser.set_defaults(func=self.handle)
 
     def handle(self, args):
-        if args.setmain:
+        if args.main:
             self.set_main()
-        elif args.setwork:
-            self.tags.set_work()
+        elif args.unset:
+            self.unset()
+        elif args.work:
+            self.setwork()
         elif args.important:
             self.tags.add_important()
-        elif args.worklogs:
-            self.print_work_logs()
         else:
-            self.print_tags()
+            self.parser.print_help()
 
     def set_main(self):
         result = YES
@@ -39,6 +40,7 @@ class TagsCli:
             result = confirm(f"Are you sure you want to change {Main} branch?")
         if result == YES:
             self.tags.set_main()
+            print(f"{main_(self.tags.get_tags().main)} is now the {Main} branch")
         else:
             print(f"{Main} branch not updated.")
 
@@ -46,10 +48,13 @@ class TagsCli:
         tags: Tags = self.tags.get_tags()
         not_set = "[Not set]"
         print(f"{Main}: {tags.main or not_set}")
-        print(f"{Work}: {tags.work[0] if tags.work else not_set or not_set}")
+        print(f"{Work}: {tags.work[0] if tags.work and tags.work[0] is not None else not_set}")
         print(f"{Important}: {tags.important or not_set}")
 
-    def print_work_logs(self):
-        tags: Tags = self.tags.get_tags()
-        print(f"Most recent {Work} branches")
-        print(tags.work)
+    def unset(self):
+        self.tags.unset()
+        print("Current branch is not marked any more.")
+
+    def setwork(self):
+        self.tags.set_work()
+        print(f"{work(self.tags.get_tags().work[0])} is now the {Work} branch")

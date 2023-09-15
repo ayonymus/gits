@@ -1,6 +1,6 @@
 
 class Tags(object):
-    def __init__(self, main: str = None, work: [] = None, important: [] = None):
+    def __init__(self, main: str = None, work: [] = None, important: {} = None):
         self.main = main
         self.work = work
         self.important = important
