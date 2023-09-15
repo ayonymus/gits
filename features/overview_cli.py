@@ -13,7 +13,7 @@ DOWN = "\u25bc"
 
 UPSTREAM = UP
 PUSHED = colored(UP, 'green')
-MERGED = LEFT
+MERGED = colored(LEFT, 'green')
 NO_UPSTREAM = colored(UP, 'red')
 
 
@@ -54,9 +54,9 @@ class OverviewCli:
     def print_legend(self):
         print(f"{Current} {Main} {Work} {Important} Regular")
         print(
-            f"{PUSHED} Sync w/ origin",
+            f"{PUSHED} Sync with remote",
             f"{UPSTREAM} Has remote",
-            f"{NO_UPSTREAM} No remote, not on {Main}",
+            f"{NO_UPSTREAM} No remote and not on {Main}",
             f"{MERGED} Merged to {Main}")
 
     def upstream_status(self, branch, main):
@@ -69,7 +69,7 @@ class OverviewCli:
         elif has_upstream:
             state = UPSTREAM
         elif is_merged:
-            state = LEFT
+            state = MERGED
         else:
             state = NO_UPSTREAM
         return state
